@@ -1,10 +1,10 @@
 [submodule "third-party/argparse"]
 	path = third-party/argparse
 	url = https://github.com/p-ranav/argparse.git
-[submodule "third-party/UPMEM-sdk"]
-	path = third-party/UPMEM-sdk
-	url = https://github.com/ZhaoYW007/UPMEM-sdk.git
 [submodule "third-party/parlaylib"]
 	path = third-party/parlaylib
 	url = https://github.com/Loremkang/parlaylib.git
 	branch = for_pim_tree
+[submodule "third-party/UPMEM-sdk"]
+	path = third-party/UPMEM-sdk
+	url = https://github.com/cmuparlay/UPMEM-sdk.git

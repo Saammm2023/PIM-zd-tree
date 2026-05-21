@@ -2,7 +2,7 @@
 
 This repository contains an implementation of the **throughput-optimized version of PIM-zd-tree** for the **UPMEM processing-in-memory (PIM) system**.
 
-If you use our code, please cite:
+If you use our code, please cite our paper:
 
 ```bibtex
 @inproceedings{zhao2026pim,
