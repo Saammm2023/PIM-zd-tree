@@ -90,6 +90,38 @@ each DPU holds the whole subtree for its range. There is no push-pull search and
 throughput-optimized configuration (theta_L1 = 1, chunk size n/P), except that our borders are fixed from the warm-up
 data, while the paper's L0 adapts through promotion and demotion.
 
+## CPU baselines (`cpu_baseline/`)
+
+`cpu_baseline/cpu_bench` runs the paper's two shared-memory competitors from
+[SpaceTreeLib](https://github.com/ucrparlay/SpaceTreeLib) (commit `212220f`, header-only, needs g++ ≥ 14):
+the Pkd-tree (`psi::kd_tree`, max-stretch dimension and object-median split) and the original zd-tree (`include/baselines/zdtree_3d`).
+It uses the same data generator (`host/datagen_core.hpp`) and the same flags as the PIM host, so both see identical
+points, insert batches and lookup queries.
+
+```bash
+git clone --recursive https://github.com/ucrparlay/SpaceTreeLib.git ../SpaceTreeLib
+make -C cpu_baseline
+PARLAY_NUM_THREADS=20 cpu_baseline/cpu_bench --tree pkd -i 100000 -I 10 -t 1 -b 50000 -r 2 -s 1 -S 50000 \
+    --dist zipf --zipf-s 1.5 --cluster-width-log2 22 --stats-csv results/cpu --stats-tag strong
+```
+
+`--tree pkd|zd`. Each batch appends `tree,tag,threads,op,batch_idx,ops,seconds,found` to `<prefix>_cpu.csv`. Times are
+wall-clock on the host CPU (20 threads on the i5-13500 by default; set `PARLAY_NUM_THREADS`).
+
+Lookups: the Pkd-tree uses `contains(p)`. The zd-tree wrapper's `range_count` is not `const`, so `contains` does not
+compile for it, and it uses a 1-NN search instead (found when the distance is 0).
+
+The bundled zd-tree builds its Morton code from only the low 21 bits of each coordinate. Given our 31-bit coordinates, its curve
+order was effectively random and every query scanned most of the tree (about 700 µs per lookup). It now gets `coord >> 10`, the
+same 21 bits per dimension that PIM-zd-tree keys use. SpaceTreeLib itself is unmodified.
+
+Smoke test (1M warm-up points, 2 × 50k timed inserts, 50k lookups, 20 threads; every query sampled from the data was found):
+
+| Tree | Data | Insert Mop/s | Lookup Mop/s |
+|---|---|---|---|
+| Pkd-tree | uniform / moderate / strong | 15.5 / 15.7 / 16.0 | 14.6 / 14.8 / 13.8 |
+| zd-tree | uniform / moderate / strong | 6.5 / 7.1 / 6.8 | 7.7 / 8.6 / 7.4 |
+
 ## Measurement (`--stats-csv`)
 
 ```bash
@@ -124,6 +156,7 @@ timed host work.
 | `host/compile.hpp`, `Makefile` | DPU binary directory comes from `BUILDDIR` (was hard-coded to `build/`) |
 | `Makefile` | PAPI optional: `USE_PAPI ?= 0` |
 | `pim_base/host/pim_stats.hpp`, `pim_base/dpu/driver.h`, `task_framework_host.hpp`, `host/host.cpp` | per-batch DPU cycles, bytes and host time to CSV (`--stats-csv`, `--stats-tag`) |
+| `host/datagen_core.hpp`, `cpu_baseline/` | generator core shared with the CPU baselines; CPU driver for SpaceTreeLib |
 | `host/datagen.hpp`, `host/host.cpp` | reproducible uniform / Zipf-cluster generator, dataset Gini, `--placement quantile|equal`, `--verify-each-batch` |
 | `host/operations.hpp` (`insert`) | **bug fix**: insert tasks are grouped by target, not by consecutive run in key order (see below) |
 | `host/operations.hpp` (`insert`) | insert tasks capped at `MAX_INSERT_TASK_LEN` points; the extra points go into another insert round (see Known limits) |
