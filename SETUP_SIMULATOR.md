@@ -60,6 +60,30 @@ The lookup batch has `search_batch_size + 1` queries. The extra query, and any l
 multiple of `-I`, is a random point that is not in the dataset, so `Unmatch Num` = 1 + (`-S` mod `-I`).
 Checked: `-i 30000 -I 4 -S 2003` gives `Match Num: 2000; Unmatch Num: 4`.
 
+## Measurement (`--stats-csv`)
+
+```bash
+./build8/zd_tree_host -i 10000 -I 10 -t 1 -b 10000 -r 2 -s 1 -S 20000 --stats-csv results/run --stats-tag uniform
+```
+
+Rows are appended (headers written once) to `results/run_batches.csv`, one row per batch, and
+`results/run_dpus.csv`, one row per DPU per batch. Batches are tagged `warmup_insert` (the `-i/-I` rounds),
+`insert` (the timed `-t 1` rounds) and `lookup` (the `-s 1` batch).
+
+| Column | Meaning |
+|---|---|
+| `launches` | DPU launches in the batch (insert = search + insert, more if rounds were split) |
+| `pim_cycles_bsp` | sum over launches of the slowest DPU's cycles: PIM time = this / 350 MHz |
+| `pim_cycles_mean` | average DPU's cycles over the batch; `dpu_cycles_max_total / pim_cycles_mean` = load imbalance |
+| `send_bytes`, `recv_bytes` | useful bytes host→DPU and DPU→host, summed over DPUs |
+| `*_padded` | bytes actually moved: each parallel transfer sends the largest DPU's size to every DPU |
+| `*_max_dpu` | sum over transfers of the per-DPU transfer size (input for a bandwidth model) |
+| `wall_s`, `sim_s`, `cpu_s` | host wall time, time inside simulated DPU runs and transfers, and their difference (host CPU work) |
+
+DPU cycles come from `launch_cycles`, set by tasklet 0 in `run()` (`pim_base/dpu/driver.h`): the cycle counter is
+reset at the start of each launch and read after all tasklets finish. The per-launch read happens outside the
+timed host work.
+
 ## Changes made for the simulator
 
 | File | Change |
@@ -69,6 +93,7 @@ Checked: `-i 30000 -I 4 -S 2003` gives `Match Num: 2000; Unmatch Num: 4`.
 | `pim_base/pim_interface/direct_interface.hpp` | AVX-512 byte interleave compiled only with `__AVX512F__`; otherwise it aborts with a message |
 | `host/compile.hpp`, `Makefile` | DPU binary directory comes from `BUILDDIR` (was hard-coded to `build/`) |
 | `Makefile` | PAPI optional: `USE_PAPI ?= 0` |
+| `pim_base/host/pim_stats.hpp`, `pim_base/dpu/driver.h`, `task_framework_host.hpp`, `host/host.cpp` | per-batch DPU cycles, bytes and host time to CSV (`--stats-csv`, `--stats-tag`) |
 | `host/operations.hpp` (`insert`) | insert tasks capped at `MAX_INSERT_TASK_LEN` points; the extra points go into another insert round (see Known limits) |
 | `common/configs.h`, `dpu/configs_dpu.h` | `MRAM_BUFFER_SIZE` moved to `common/configs.h`; new `INSERT_SCRATCH_CAPACITY` / `MAX_INSERT_TASK_LEN` |
 | `dpu/single_node.h` (`p_insert`) | subtree-build queue bounded to its own quarter of the scratch (it ran into the next tasklet's area); capacity assert (only active with `ZHAOYW_DEBUG`) |

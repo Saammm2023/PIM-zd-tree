@@ -8,6 +8,7 @@
 #include "task_framework_common.h"
 
 #include "pim_interface_header.hpp"
+#include "pim_stats.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -668,6 +669,17 @@ class IO_Manager {
 
         int direct_length = get_direct_size();
 
+        // Bytes for the per-batch statistics: useful bytes per DPU, and the padded size every DPU receives
+        if (pim_stats::active) {
+            for (int i = 0; i < nr_of_dpus; i++) {
+                int64_t useful = (direct_cnt == 0) ? (CPU_DPU_HEADER + broadcast_length + cnt_length)
+                                                   : ((int64_t*)direct_buffer[i])[2];
+                pim_stats::record_send(i, useful);
+            }
+            pim_stats::record_send_transfer(CPU_DPU_HEADER + broadcast_length + direct_length + cnt_length,
+                                            nr_of_dpus);
+        }
+
         time_end("pre send");
 
 #ifdef INFO_IO_BALANCE
@@ -702,6 +714,7 @@ class IO_Manager {
 
         // parlay::deactivate_scheduling(true);
 
+        pim_stats::SimTimer send_sim_timer;
         time_nested("trigger", [&]() {
             if (direct_cnt == 0) {
                 parlay::deactivate_scheduling(true);
@@ -803,6 +816,8 @@ class IO_Manager {
     }
 
     void receive_from_direct(int offset, int length) {
+        pim_stats::SimTimer sim_timer;
+        pim_stats::record_recv_transfer(length, nr_of_dpus);
         // DPU_FOREACH(dpu_set, dpu, each_dpu) {
         //     DPU_ASSERT(dpu_prepare_xfer(dpu, direct_buffer[each_dpu] + offset));
         // }
@@ -829,6 +844,8 @@ class IO_Manager {
     }
 
     void receive_from_broadcast(int offset, int length) {
+        pim_stats::SimTimer sim_timer;
+        pim_stats::record_recv_transfer(length, 1);
         DPU_FOREACH(dpu_set, dpu, each_dpu) {
             if (each_dpu == 0) {  // !!! ???
 #ifdef IRAM_FRIENDLY
@@ -1041,6 +1058,7 @@ class IO_Manager {
             cpu_coverage_timer->end();
             pim_coverage_timer->start();
             time_nested("dpu", [&]() {
+                pim_stats::SimTimer sim_timer;
                 DPU_ASSERT(dpu_launch(dpu_set, DPU_ASYNCHRONOUS));
                 while (!dpu_control::ready()) {
                     std::this_thread::sleep_for(std::chrono::microseconds(100));
@@ -1055,6 +1073,10 @@ class IO_Manager {
                     }
                 });
             });
+            if (pim_stats::active) {
+                pim_stats::SimTimer sim_timer;  // measurement read, kept out of host time
+                pim_stats::record_launch(dpu_set);
+            }
             pim_coverage_timer->end();
             cpu_coverage_timer->start();
 
@@ -1062,6 +1084,13 @@ class IO_Manager {
                 receive_task();
                 // always use these two together, sync receive is SYNCHRONOUS
                 ret = sync();
+                if (pim_stats::active && ret) {
+                    // Reply headers hold each DPU's reply size (only DPU 0 replies to a pure broadcast)
+                    for (int j = 0; j < nr_of_dpus; j++) {
+                        if (direct_cnt == 0 && j > 0) break;
+                        pim_stats::record_recv(j, ((int64_t*)direct_buffer[j])[2]);
+                    }
+                }
             });
             working_manager = nullptr;
         }

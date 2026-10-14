@@ -25,11 +25,16 @@ extern uint64_t cycle_count;
 void wram_heap_save();
 void wram_heap_load();
 
+// Cycles of the last launch on this DPU (whole run(), all tasklets), read by the host after each launch
+__host uint64_t launch_cycles;
+BARRIER_INIT(cycle_barrier, NR_TASKLETS);
+
 void run() {
 #ifdef DPU_ENERGY
     perfcounter_t initial_time = perfcounter_config(COUNT_CYCLES, false);
 #endif
     uint32_t tid = me();
+    if(tid == 0) perfcounter_config(COUNT_CYCLES, true);
     if(tid == 0) wram_heap_load();
 
     init_io_manager();
@@ -54,6 +59,8 @@ void run() {
     }
 
     finish_io_manager(tid);
+    barrier_wait(&cycle_barrier);
+    if(tid == 0) launch_cycles = perfcounter_get();
 #ifdef DPU_ENERGY
     cycle_count += perfcounter_get() - initial_time;
 #endif

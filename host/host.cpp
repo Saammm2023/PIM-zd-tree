@@ -34,6 +34,8 @@ bool debug_print;
 int test_type;
 int top_level_threads;
 std::string interface_type;
+std::string stats_csv_prefix;
+std::string stats_tag;
 COORD input_coord_max[NR_DIMENSION];
 
 void host_parse_arguments(int argc, char *argv[]) {
@@ -93,6 +95,12 @@ void host_parse_arguments(int argc, char *argv[]) {
         .help("Number of top-level threads")
         .default_value(1)
         .scan<'i', int>();
+    parser.add_argument("--stats-csv")
+        .help("Append per-batch DPU cycles and bytes to <prefix>_batches.csv and <prefix>_dpus.csv")
+        .default_value(std::string(""));
+    parser.add_argument("--stats-tag")
+        .help("Label written to every stats row (e.g. the data distribution)")
+        .default_value(std::string(""));
 
     parser.parse_args(argc, argv);
 
@@ -109,6 +117,8 @@ void host_parse_arguments(int argc, char *argv[]) {
     debug_print        = parser.get<bool>("--debug");
     print_timer        = parser.get<bool>("--print-timer");
     top_level_threads  = parser.get<int>("--top-level-threads");
+    stats_csv_prefix   = parser.get<std::string>("--stats-csv");
+    stats_tag          = parser.get<std::string>("--stats-tag");
 
     for (int i = 0; i < NR_DIMENSION; ++i)
         input_coord_max[i] = INT32_MAX;
@@ -121,6 +131,7 @@ int main(int argc, char *argv[]) {
     printf("------------------- Start ---------------------\n");
     host_parse_arguments(argc, argv);
     host_init(interface_type);
+    pim_stats::configure(stats_csv_prefix, stats_tag, nr_of_dpus);
     
     pim_zd_tree zd_tree;
     pim_zd_tree *zd_forest[maxTopLevelThreads];
@@ -197,7 +208,9 @@ int main(int argc, char *argv[]) {
             if(need_to_search && i < search_per_batch && search_type < 4 && search_type > 0)
                 vecs[j * search_per_batch + i] = zd_tree.vector_input[i];
         });
+        pim_stats::begin("warmup_insert", j, insert_batch_size);
         zd_tree.insert(zd_tree.vector_input, debug_print);
+        pim_stats::end();
     }
     
     if(print_timer) {
@@ -252,7 +265,9 @@ int main(int argc, char *argv[]) {
         papi_wait_counters(true, parlay::num_workers());
 #endif
         for(int j = 0; j < test_round; j++) {
+            pim_stats::begin("insert", j, test_batch_size);
             zd_tree.insert(vec_to_search + j * test_batch_size, debug_print);
+            pim_stats::end();
         }
 #ifdef USE_PAPI
         papi_turn_counters(false);
@@ -405,7 +420,9 @@ int main(int argc, char *argv[]) {
             parfor_wrap(0, zd_tree.length, [&](size_t i) {
                 zd_tree.vector_input[i] = vecs[i];
             });
+            pim_stats::begin("lookup", 0, zd_tree.length);
             zd_tree.search_maximum_match(true, false, debug_print);
+            pim_stats::end();
         }
         else if(search_type == 2 || search_type == 3) {
             // Box ranges
