@@ -44,6 +44,13 @@ int cluster_width_log2;
 int data_seed;
 std::string placement;
 bool verify_each_batch;
+std::string query_dist;
+double query_zipf_s;
+int search_round;
+bool lookup_dedup;
+bool lookup_adaptive;
+double adaptive_threshold;
+int hot_cache_size;
 COORD input_coord_max[NR_DIMENSION];
 
 void host_parse_arguments(int argc, char *argv[]) {
@@ -131,6 +138,34 @@ void host_parse_arguments(int argc, char *argv[]) {
         .help("After every warm-up batch, look up all points inserted so far (slow; correctness check)")
         .default_value(false)
         .implicit_value(true);
+    parser.add_argument("--query-dist")
+        .help("Lookup queries: sample (first S/I points of each warm-up batch, plus one absent point), "
+              "uniform (any warm-up point) or zipf (hot keys, see --query-zipf-s)")
+        .default_value(std::string("sample"));
+    parser.add_argument("--query-zipf-s")
+        .help("Zipf exponent of key popularity for --query-dist zipf")
+        .default_value(1.0)
+        .scan<'g', double>();
+    parser.add_argument("--search-round")
+        .help("Number of lookup batches of --search-batch-size queries (uniform/zipf query-dist)")
+        .default_value(1)
+        .scan<'i', int>();
+    parser.add_argument("--lookup-dedup")
+        .help("Send each distinct key once per lookup batch (contribution)")
+        .default_value(false)
+        .implicit_value(true);
+    parser.add_argument("--lookup-adaptive")
+        .help("Use dedup/cache only for batches whose busiest DPU would get > --adaptive-threshold x the mean lookups (contribution; implies --lookup-dedup)")
+        .default_value(false)
+        .implicit_value(true);
+    parser.add_argument("--adaptive-threshold")
+        .help("--lookup-adaptive uses dedup/cache when busiest DPU's lookups > this x mean")
+        .default_value(1.2)
+        .scan<'g', double>();
+    parser.add_argument("--hot-cache-size")
+        .help("Keys in the host-side hot-key cache, 0 = off (contribution; implies --lookup-dedup)")
+        .default_value(0)
+        .scan<'i', int>();
     parser.add_argument("--seed")
         .help("Seed for the data generator")
         .default_value(1)
@@ -160,6 +195,18 @@ void host_parse_arguments(int argc, char *argv[]) {
     data_seed          = parser.get<int>("--seed");
     placement          = parser.get<std::string>("--placement");
     verify_each_batch  = parser.get<bool>("--verify-each-batch");
+    query_dist         = parser.get<std::string>("--query-dist");
+    query_zipf_s       = parser.get<double>("--query-zipf-s");
+    search_round       = parser.get<int>("--search-round");
+    lookup_dedup       = parser.get<bool>("--lookup-dedup");
+    hot_cache_size     = parser.get<int>("--hot-cache-size");
+    lookup_adaptive    = parser.get<bool>("--lookup-adaptive");
+    adaptive_threshold = parser.get<double>("--adaptive-threshold");
+    if(hot_cache_size > 0 || lookup_adaptive) lookup_dedup = true;
+    if(query_dist != "sample" && query_dist != "uniform" && query_dist != "zipf") {
+        fprintf(stderr, "unknown --query-dist %s (use sample, uniform or zipf)\n", query_dist.c_str());
+        exit(1);
+    }
     if(placement != "quantile" && placement != "equal") {
         fprintf(stderr, "unknown --placement %s (use quantile or equal)\n", placement.c_str());
         exit(1);
@@ -500,13 +547,39 @@ int main(int argc, char *argv[]) {
             cpu_coverage_timer->end();
             cpu_coverage_timer->reset();
             pim_coverage_timer->reset();
-            zd_tree.length = search_batch_size + 1;
-            parfor_wrap(0, zd_tree.length, [&](size_t i) {
-                zd_tree.vector_input[i] = vecs[i];
-            });
-            pim_stats::begin("lookup", 0, zd_tree.length);
-            zd_tree.search_maximum_match(true, false, debug_print);
-            pim_stats::end();
+            zd_tree.lookup_dedup = lookup_dedup;
+            zd_tree.lookup_adaptive = lookup_adaptive;
+            zd_tree.adaptive_threshold = adaptive_threshold;
+            if(lookup_dedup) zd_tree.dedup_table.reserve(search_batch_size);  // setup, outside the measured batches
+            zd_tree.hot_cache.capacity = hot_cache_size;
+            if(query_dist == "sample") {
+                zd_tree.length = search_batch_size + 1;
+                parfor_wrap(0, zd_tree.length, [&](size_t i) {
+                    zd_tree.vector_input[i] = vecs[i];
+                });
+                pim_stats::begin("lookup", 0, zd_tree.length);
+                zd_tree.search_maximum_match(true, false, debug_print);
+                pim_stats::end();
+            }
+            else {
+                // Queries over the warm-up points: every one should be found (Unmatch Num: 0)
+                datagen::init_queries(query_dist, query_zipf_s, (uint64_t)total_insert_size);
+                for(int r = 0; r < search_round; r++) {
+                    zd_tree.length = search_batch_size;
+                    parfor_wrap(0, zd_tree.length, [&](size_t i) {
+                        zd_tree.vector_input[i] = datagen::point(1, datagen::query_point_index(r, i));
+                    });
+                    pim_stats::begin("lookup", r, zd_tree.length);
+                    zd_tree.search_maximum_match(true, false, debug_print);
+                    pim_stats::end();
+                }
+                if(zd_tree.lookup_adaptive)
+                    printf("Adaptive lookups: dedup skipped in %llu of %llu batches\n",
+                           (unsigned long long)zd_tree.adaptive_skipped, (unsigned long long)zd_tree.adaptive_batches);
+                if(zd_tree.hot_cache.capacity > 0)
+                    printf("Hot-key cache: %zu keys, %llu hits of %llu lookups\n", zd_tree.hot_cache.keys.size(),
+                           (unsigned long long)zd_tree.hot_cache.hits, (unsigned long long)zd_tree.hot_cache.lookups);
+            }
         }
         else if(search_type == 2 || search_type == 3) {
             // Box ranges

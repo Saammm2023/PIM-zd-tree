@@ -90,6 +90,18 @@ each DPU holds the whole subtree for its range. There is no push-pull search and
 throughput-optimized configuration (theta_L1 = 1, chunk size n/P), except that our borders are fixed from the warm-up
 data, while the paper's L0 adapts through promotion and demotion.
 
+## Our addition: skew-aware lookups (see `results/CONTRIBUTION.md`)
+
+| Option | Meaning |
+|---|---|
+| `--query-dist uniform\|zipf --query-zipf-s s` | lookup keys drawn from the warm-up points, uniformly or with Zipf(s) popularity (hot keys); `sample` (default) is the original query set |
+| `--search-round R` | R lookup batches of `-S` queries |
+| `--lookup-dedup` | send each distinct key of a batch once |
+| `--hot-cache-size N` | host-side cache of N hot, present keys (implies `--lookup-dedup`) |
+| `--lookup-adaptive [--adaptive-threshold 1.2]` | use dedup/cache only when the busiest DPU would get > threshold × mean lookups |
+
+`cpu_baseline/cpu_bench` takes the same `--query-dist`, `--query-zipf-s` and `--search-round`.
+
 ## CPU baselines (`cpu_baseline/`)
 
 `cpu_baseline/cpu_bench` runs the paper's two shared-memory competitors from
@@ -127,8 +139,9 @@ Smoke test (1M warm-up points, 2 × 50k timed inserts, 50k lookups, 20 threads; 
 ```bash
 source ~/upmem-sdk/env-sim.sh
 make -C cpu_baseline
-scripts/run_sweep.sh all          # cpu | scaling | batch | skewcmp; about 45 minutes in total
+scripts/run_sweep.sh all          # cpu | scaling | batch | skewcmp | contrib; about 90 minutes in total
 ../.venv/bin/python scripts/analyze.py
+../.venv/bin/python scripts/analyze_contrib.py
 ```
 
 `analyze.py` needs matplotlib, NumPy and pandas. Without root, create the venv from the standalone Python:
@@ -172,6 +185,7 @@ timed host work.
 | `pim_base/host/pim_stats.hpp`, `pim_base/dpu/driver.h`, `task_framework_host.hpp`, `host/host.cpp` | per-batch DPU cycles, bytes and host time to CSV (`--stats-csv`, `--stats-tag`) |
 | `host/datagen_core.hpp`, `cpu_baseline/` | generator core shared with the CPU baselines; CPU driver for SpaceTreeLib |
 | `host/datagen.hpp`, `host/host.cpp` | reproducible uniform / Zipf-cluster generator, dataset Gini, `--placement quantile|equal`, `--verify-each-batch` |
+| `host/hot_cache.hpp`, `host/operations.hpp` (`search_maximum_match`), `host/datagen_core.hpp` | our addition: hot-key query workloads, lookup dedup, hot-key cache, adaptive switching |
 | `host/operations.hpp` (`insert`) | **bug fix**: insert tasks are grouped by target, not by consecutive run in key order (see below) |
 | `host/operations.hpp` (`insert`) | insert tasks capped at `MAX_INSERT_TASK_LEN` points; the extra points go into another insert round (see Known limits) |
 | `common/configs.h`, `dpu/configs_dpu.h` | `MRAM_BUFFER_SIZE` moved to `common/configs.h`; new `INSERT_SCRATCH_CAPACITY` / `MAX_INSERT_TASK_LEN` |

@@ -41,6 +41,9 @@ struct Options {
     int clusters = 1024, cluster_width_log2 = 22, seed = 1;
     std::string csv, tag;
     int rep = 0;
+    std::string query_dist = "sample";
+    double query_zipf_s = 1.0;
+    long search_round = 1;
 };
 
 Options parse(int argc, char** argv) {
@@ -67,6 +70,9 @@ Options parse(int argc, char** argv) {
         else if (a == "--stats-csv") o.csv = next();
         else if (a == "--stats-tag") o.tag = next();
         else if (a == "--rep") o.rep = std::atoi(next());
+        else if (a == "--query-dist") o.query_dist = next();
+        else if (a == "--query-zipf-s") o.query_zipf_s = std::atof(next());
+        else if (a == "--search-round") o.search_round = std::atol(next());
         else { std::fprintf(stderr, "unknown option %s\n", a.c_str()); std::exit(1); }
     }
     return o;
@@ -138,7 +144,7 @@ void run(const Options& o, const char* tree_name) {
         }
     }
 
-    if (o.search_type == 1) {
+    if (o.search_type == 1 && o.query_dist == "sample") {
         // Same queries as the PIM host: the first S / I points of each warm-up batch, then random points
         long per_batch = o.search_batch_size / o.insert_round;
         long sampled = per_batch * o.insert_round;
@@ -160,6 +166,21 @@ void run(const Options& o, const char* tree_name) {
         double sec = seconds_since(t0);
         record("lookup", 0, n, sec, found.load());
         std::printf("Lookup: %ld of %ld queries found (%ld were sampled from the data)\n", found.load(), n, sampled);
+    } else if (o.search_type == 1) {
+        // Same query stream as the PIM host's --query-dist uniform|zipf: every query is a warm-up point
+        datagen::init_queries(o.query_dist, o.query_zipf_s, (uint64_t)(o.insert_batch_size * o.insert_round));
+        long n = o.search_batch_size;
+        for (long r = 0; r < o.search_round; r++) {
+            auto queries = parlay::tabulate(n, [&](size_t q) {
+                return make_point(datagen::point_coords(1, datagen::query_point_index(r, q)));
+            });
+            std::atomic<long> found{0};
+            auto t0 = clock_type::now();
+            parlay::parallel_for(0, n, [&](size_t q) {
+                if (lookup(tree, queries[q])) found.fetch_add(1, std::memory_order_relaxed);
+            });
+            record("lookup", r, n, seconds_since(t0), found.load());
+        }
     }
     if (csv != nullptr) std::fclose(csv);
     tree.delete_tree();

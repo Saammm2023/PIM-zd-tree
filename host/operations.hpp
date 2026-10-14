@@ -10,6 +10,7 @@
 #include "dpu_ctrl.hpp"
 #include "timer.hpp"
 #include "geometry.hpp"
+#include "hot_cache.hpp"
 #include "utils.hpp"
 #include "heap.hpp"
 
@@ -56,6 +57,15 @@ public:
     int64_t *i64_io;
 
     int8_t key_to_dpu_id_mode;
+    bool lookup_dedup = false;  // send each distinct key once per lookup batch
+    HotKeyCache hot_cache;      // answers lookups of hot, known-present keys on the host
+    KeyDedupTable dedup_table;
+    // Adaptive: dedup and cache only pay off when a BSP round would wait on a hot DPU. The host knows every
+    // lookup's target DPU before sending, so it uses them only when the busiest DPU would get more than
+    // adaptive_threshold times the mean number of lookups.
+    bool lookup_adaptive = false;
+    double adaptive_threshold = 1.2;
+    uint64_t adaptive_skipped = 0, adaptive_batches = 0;
     uint64_t *partition_borders;
 
     pim_zd_tree() {
@@ -840,30 +850,128 @@ public:
         IO_Manager *io;
         IO_Task_Batch *single_key_search_batch;
 
-        time_nested("taskgen", [&]() {
-            key_seq = parlay::tabulate(this->length, [&](size_t i){ return coord_to_key(&(this->vector_input[i])); });
-            parfor_wrap(0, this->length, [&](size_t i){ this->target_dpu[i] = key_to_dpu_id(key_seq[i]); });
-            io = alloc_io_manager();
-            io->init();
-            single_key_search_batch = io->alloc<Single_key_search_task, Single_key_search_reply>(direct);
-            single_key_search_batch->push_task_from_array_by_isort<false>(
-                this->length,
-                [&](size_t i) {
-                    return (Single_key_search_task){.key = key_seq[i]};
-                },
-                parlay::make_slice(this->target_dpu, this->target_dpu + this->length),
-                parlay::make_slice(this->op_taskpos, this->op_taskpos + this->length)
-            );
-            io->finish_task_batch();
-        });
-        time_nested("exec", [&](){ASSERT(io->exec());});
-        time_nested("get result", [&]() {
-            return_seq = parlay::tabulate(this->length, [&](size_t i) {
-                Single_key_search_reply *rep = (Single_key_search_reply*)single_key_search_batch->ith(this->target_dpu[i], this->op_taskpos[i]);
-                return rep->key;
+        bool use_dedup = this->lookup_dedup;
+        bool targets_ready = false;  // key_seq and target_dpu already computed (by the adaptive check)
+        if(use_dedup && this->lookup_adaptive && this->length > 0) {
+            this->adaptive_batches++;
+            time_nested("adaptive check", [&]() {
+                key_seq = parlay::tabulate(this->length, [&](size_t i){ return coord_to_key(&(this->vector_input[i])); });
+                parfor_wrap(0, this->length, [&](size_t i){ this->target_dpu[i] = key_to_dpu_id(key_seq[i]); });
+                targets_ready = true;
+                auto per_dpu = parlay::histogram_by_index(
+                    parlay::make_slice(this->target_dpu, this->target_dpu + this->length), (size_t)nr_of_dpus);
+                double busiest = (double)parlay::reduce(per_dpu, parlay::maxm<size_t>());
+                if(busiest * nr_of_dpus < this->adaptive_threshold * this->length) {
+                    use_dedup = false;
+                    this->adaptive_skipped++;
+                }
             });
-            io->reset();
-        });
+        }
+        if(!use_dedup) {
+            time_nested("taskgen", [&]() {
+                if(!targets_ready) {
+                    key_seq = parlay::tabulate(this->length, [&](size_t i){ return coord_to_key(&(this->vector_input[i])); });
+                    parfor_wrap(0, this->length, [&](size_t i){ this->target_dpu[i] = key_to_dpu_id(key_seq[i]); });
+                }
+                io = alloc_io_manager();
+                io->init();
+                single_key_search_batch = io->alloc<Single_key_search_task, Single_key_search_reply>(direct);
+                single_key_search_batch->push_task_from_array_by_isort<false>(
+                    this->length,
+                    [&](size_t i) {
+                        return (Single_key_search_task){.key = key_seq[i]};
+                    },
+                    parlay::make_slice(this->target_dpu, this->target_dpu + this->length),
+                    parlay::make_slice(this->op_taskpos, this->op_taskpos + this->length)
+                );
+                io->finish_task_batch();
+            });
+            time_nested("exec", [&](){ASSERT(io->exec());});
+            time_nested("get result", [&]() {
+                return_seq = parlay::tabulate(this->length, [&](size_t i) {
+                    Single_key_search_reply *rep = (Single_key_search_reply*)single_key_search_batch->ith(this->target_dpu[i], this->op_taskpos[i]);
+                    return rep->key;
+                });
+                io->reset();
+            });
+        }
+        else {
+            // Our addition: answer known-hot keys on the host, send each remaining distinct key once
+            if(!targets_ready)
+                key_seq = parlay::tabulate(this->length, [&](size_t i){ return coord_to_key(&(this->vector_input[i])); });
+            parlay::sequence<uint64_t> unique_keys, unique_ret;
+            parlay::sequence<uint32_t> unique_id(this->length, UINT32_MAX);  // UINT32_MAX = answered by the cache
+            parlay::sequence<uint32_t> unique_cnt;
+            time_nested("taskgen", [&]() {
+                // Distinct keys among the lookups the cache does not answer
+                this->dedup_table.reserve(this->length);
+                parlay::sequence<uint32_t> slot(this->length, UINT32_MAX);
+                parlay::sequence<bool> first(this->length, false);
+                bool use_cache = this->hot_cache.enabled();
+                parfor_wrap(0, this->length, [&](size_t i) {
+                    if(use_cache && this->hot_cache.contains(key_seq[i])) return;
+                    auto [h, created] = this->dedup_table.insert(key_seq[i]);
+                    slot[i] = h;
+                    first[i] = created;
+                });
+                auto owners = parlay::pack_index<uint32_t>(first);
+                size_t m = owners.size();
+                unique_keys = parlay::tabulate(m, [&](size_t u) { return key_seq[owners[u]]; });
+                parfor_wrap(0, m, [&](size_t u) { this->dedup_table.slot_unique[slot[owners[u]]] = (uint32_t)u; });
+                unique_cnt = parlay::tabulate(m, [&](size_t u) {
+                    return this->dedup_table.slot_count[slot[owners[u]]].load(std::memory_order_relaxed); });
+                parfor_wrap(0, this->length, [&](size_t i) {
+                    if(slot[i] != UINT32_MAX) unique_id[i] = this->dedup_table.slot_unique[slot[i]];
+                });
+                parfor_wrap(0, m, [&](size_t u) { this->dedup_table.clear_slot(slot[owners[u]]); });
+                parfor_wrap(0, m, [&](size_t u) { this->target_dpu[u] = key_to_dpu_id(unique_keys[u]); });
+                if(m > 0) {
+                    io = alloc_io_manager();
+                    io->init();
+                    single_key_search_batch = io->alloc<Single_key_search_task, Single_key_search_reply>(direct);
+                    single_key_search_batch->push_task_from_array_by_isort<false>(
+                        (int)m,
+                        [&](size_t u) { return (Single_key_search_task){.key = unique_keys[u]}; },
+                        parlay::make_slice(this->target_dpu, this->target_dpu + m),
+                        parlay::make_slice(this->op_taskpos, this->op_taskpos + m)
+                    );
+                    io->finish_task_batch();
+                }
+            });
+            size_t m = unique_keys.size();
+            if(m > 0) {
+                time_nested("exec", [&](){ASSERT(io->exec());});
+                time_nested("get result", [&]() {
+                    unique_ret = parlay::tabulate(m, [&](size_t u) {
+                        Single_key_search_reply *rep = (Single_key_search_reply*)single_key_search_batch->ith(this->target_dpu[u], this->op_taskpos[u]);
+                        return rep->key;
+                    });
+                    io->reset();
+                });
+            }
+            time_nested("fan out", [&]() {
+                return_seq = parlay::tabulate(this->length, [&](size_t i) {
+                    return unique_id[i] == UINT32_MAX ? key_seq[i] : unique_ret[unique_id[i]];
+                });
+                if(this->hot_cache.enabled()) {
+                    this->hot_cache.lookups += this->length;
+                    this->hot_cache.hits += this->length - parlay::count_if(unique_id, [](uint32_t u) { return u != UINT32_MAX; });
+                    auto dup = parlay::pack_index<uint32_t>(parlay::delayed_tabulate(m, [&](size_t u) {
+                        return unique_cnt[u] >= 2 && unique_ret[u] == unique_keys[u]; }));
+                    // Only the batch's `capacity` most repeated keys can enter the cache; passing just those keeps
+                    // the (serial) cache update small when many keys repeat by chance
+                    std::vector<uint32_t> top(dup.begin(), dup.end());
+                    if(top.size() > this->hot_cache.capacity) {
+                        std::nth_element(top.begin(), top.begin() + this->hot_cache.capacity, top.end(),
+                                         [&](uint32_t a, uint32_t b) { return unique_cnt[a] > unique_cnt[b]; });
+                        top.resize(this->hot_cache.capacity);
+                    }
+                    std::vector<std::pair<uint64_t, uint32_t>> found_dups(top.size());
+                    for(size_t k = 0; k < top.size(); k++) found_dups[k] = {unique_keys[top[k]], unique_cnt[top[k]]};
+                    this->hot_cache.end_batch(found_dups);
+                }
+            });
+        }
 
         time_end("search max match");
 

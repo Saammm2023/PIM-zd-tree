@@ -110,4 +110,56 @@ inline coords point_coords(uint64_t stream, uint64_t index) {
     return v;
 }
 
+// ---- Lookup queries over the warm-up points (stream 1, indices 0..n-1) ----
+// uniform: every inserted point equally likely. zipf: point of popularity rank r (1-based) is asked with
+// probability proportional to 1 / r^s, so a few hot keys get many of the queries; ranks are mapped to points by
+// a fixed permutation so hot points are scattered over the data set (and over the DPUs).
+
+enum class QueryDist { uniform, zipf };
+
+struct QueryConfig {
+    QueryDist dist = QueryDist::uniform;
+    double zipf_s = 1.0;
+    uint64_t n = 0;     // number of points queries are drawn from
+    uint64_t mult = 1;  // rank -> point permutation: (rank * mult + 12345) mod n, mult coprime with n
+};
+
+inline QueryConfig qcfg;
+inline std::vector<double> query_cdf;
+
+inline uint64_t gcd_u64(uint64_t a, uint64_t b) {
+    while (b != 0) { uint64_t t = a % b; a = b; b = t; }
+    return a;
+}
+
+inline bool init_queries(const std::string& dist, double zipf_s, uint64_t n) {
+    if (dist == "uniform") qcfg.dist = QueryDist::uniform;
+    else if (dist == "zipf") qcfg.dist = QueryDist::zipf;
+    else return false;
+    qcfg.zipf_s = zipf_s;
+    qcfg.n = n;
+    qcfg.mult = 1000003;
+    while (gcd_u64(qcfg.mult, n) != 1) qcfg.mult += 2;
+    if (qcfg.dist == QueryDist::zipf) {
+        query_cdf.resize(n);
+        double sum = 0;
+        for (uint64_t r = 0; r < n; r++) {
+            sum += 1.0 / std::pow((double)(r + 1), zipf_s);
+            query_cdf[r] = sum;
+        }
+        for (auto& v : query_cdf) v /= sum;
+    }
+    return true;
+}
+
+// Index (into warm-up stream 1) of query q of lookup round r
+inline uint64_t query_point_index(uint64_t round, uint64_t q) {
+    uint64_t h = rnd(4 + round, q, 9);
+    if (qcfg.dist == QueryDist::uniform) return h % qcfg.n;
+    double u = (double)(h >> 11) * (1.0 / 9007199254740992.0);
+    uint64_t rank = (uint64_t)(std::upper_bound(query_cdf.begin(), query_cdf.end(), u) - query_cdf.begin());
+    if (rank >= qcfg.n) rank = qcfg.n - 1;
+    return (uint64_t)(((unsigned __int128)rank * qcfg.mult + 12345) % qcfg.n);
+}
+
 }  // namespace datagen

@@ -1,0 +1,92 @@
+ok    contrib_16_quniform_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_quniform_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_quniform_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_quniform_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.6_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.6_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.6_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.6_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.8_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.8_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.8_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.8_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.0_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.0_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.0_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.2_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.2_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.2_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.2_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.5_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.5_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.5_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.5_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_quniform_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_quniform_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_quniform_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_quniform_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.6_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.6_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.6_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.6_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.8_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.8_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.8_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.8_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.0_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.0_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.0_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.5_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.5_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.5_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.5_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_cache64  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_cache1024  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_cache4096  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_cache16384  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_strongdata_q1.0_base  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_strongdata_q1.0_dedup  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_strongdata_q1.0_cache  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_strongdata_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    cpu contrib pkd quniform rep 1
+ok    cpu contrib pkd q0.6 rep 1
+ok    cpu contrib pkd q0.8 rep 1
+ok    cpu contrib pkd q1.0 rep 1
+ok    cpu contrib pkd q1.2 rep 1
+ok    cpu contrib pkd q1.5 rep 1
+ok    cpu contrib zd quniform rep 1
+ok    cpu contrib zd q0.6 rep 1
+ok    cpu contrib zd q0.8 rep 1
+ok    cpu contrib zd q1.0 rep 1
+ok    cpu contrib zd q1.2 rep 1
+ok    cpu contrib zd q1.5 rep 1
+ok    cpu contrib pkd quniform rep 2
+ok    cpu contrib pkd q0.6 rep 2
+ok    cpu contrib pkd q0.8 rep 2
+ok    cpu contrib pkd q1.0 rep 2
+ok    cpu contrib pkd q1.2 rep 2
+ok    cpu contrib pkd q1.5 rep 2
+ok    cpu contrib zd quniform rep 2
+ok    cpu contrib zd q0.6 rep 2
+ok    cpu contrib zd q0.8 rep 2
+ok    cpu contrib zd q1.0 rep 2
+ok    cpu contrib zd q1.2 rep 2
+ok    cpu contrib zd q1.5 rep 2
+ok    cpu contrib pkd quniform rep 3
+ok    cpu contrib pkd q0.6 rep 3
+ok    cpu contrib pkd q0.8 rep 3
+ok    cpu contrib pkd q1.0 rep 3
+ok    cpu contrib pkd q1.2 rep 3
+ok    cpu contrib pkd q1.5 rep 3
+ok    cpu contrib zd quniform rep 3
+ok    cpu contrib zd q0.6 rep 3
+ok    cpu contrib zd q0.8 rep 3
+ok    cpu contrib zd q1.0 rep 3
+ok    cpu contrib zd q1.2 rep 3
+ok    cpu contrib zd q1.5 rep 3

@@ -1,1 +1,323 @@
-make: Nothing to be done for 'all'.
+g++ -o build16/zd_tree_host host/host.cpp  -Wall -Wextra -g -Icommon -Ipim_base/common -std=c++17 -lpthread -O3 -Ihost -isystem third-party/parlaylib/include -isystem third-party/argparse/include -Ipim_base/host -Ipim_base/pim_interface -Ithird-party/UPMEM-sdk/src -Ithird-party/UPMEM-sdk/src/backends/api/include/api -Ithird-party/UPMEM-sdk/src/backends/api/include/lowlevel -Ithird-party/UPMEM-sdk/src/backends/api/src/include -Ithird-party/UPMEM-sdk/src/backends/commons/include -Ithird-party/UPMEM-sdk/src/backends/commons/src/properties -Ithird-party/UPMEM-sdk/src/backends/hw/src/rank -Ithird-party/UPMEM-sdk/src/backends/hw/src/commons -Ithird-party/UPMEM-sdk/src/backends/ufi/include/ufi -Ithird-party/UPMEM-sdk/src/backends/ufi/include -Ithird-party/UPMEM-sdk/src/backends/verbose/src -lstdc++fs  `dpu-pkg-config --cflags --libs dpu` -march=native -DNR_TASKLETS=12 -DNR_DPUS=16 -DDPU_BINARY_DIR=\"build16\"
+In file included from pim_base/host/task_framework_host.hpp:3,
+                 from host/host.hpp:13,
+                 from host/host.cpp:17:
+pim_base/host/timer.hpp: In member function ‘void coverage_timer::print_vector(std::vector<double>&)’:
+pim_base/host/timer.hpp:293:27: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<double>::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+  293 |         for (int i = 0; i < x.size(); i ++) {
+      |                         ~~^~~~~~~~~~
+In file included from pim_base/host/dpu_ctrl.hpp:6,
+                 from pim_base/host/task_framework_host.hpp:5:
+pim_base/pim_interface/pim_interface_header.hpp: In function ‘void namespace_pim_interface::pim_interface_delete()’:
+pim_base/pim_interface/pim_interface_header.hpp:24:60: warning: deleting object of abstract class type ‘PIMInterface’ which has non-virtual destructor will cause undefined behavior [-Wdelete-non-virtual-dtor]
+   24 |     void pim_interface_delete() { if(pimInterface != NULL) delete pimInterface; }
+      |                                                            ^~~~~~~~~~~~~~~~~~~
+In file included from pim_base/host/task_framework_host.hpp:6:
+pim_base/host/macro.hpp: In function ‘void print_array(std::string, int64_t*, int, bool)’:
+pim_base/host/macro.hpp:97:33: warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 4 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+   97 |             printf("%s[%d] = %llx\n", name.c_str(), i, (uint64_t)arr[i]);
+      |                              ~~~^                      ~~~~~~~~~~~~~~~~
+      |                                 |                      |
+      |                                 long long unsigned int uint64_t {aka long unsigned int}
+      |                              %lx
+pim_base/host/macro.hpp:99:33: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+   99 |             printf("%s[%d] = %lld\n", name.c_str(), i, (int64_t)arr[i]);
+      |                              ~~~^                      ~~~~~~~~~~~~~~~
+      |                                 |                      |
+      |                                 long long int          int64_t {aka long int}
+      |                              %ld
+pim_base/host/task_framework_host.hpp: In member function ‘bool IO_Manager::sync()’:
+pim_base/host/task_framework_host.hpp:912:14: warning: variable ‘check_error’ set but not used [-Wunused-but-set-variable]
+  912 |         auto check_error = [&]() {
+      |              ^~~~~~~~~~~
+In file included from host/operations.hpp:15,
+                 from host/host.cpp:18:
+host/heap.hpp: In constructor ‘heap_host::heap_host(uint8_t)’:
+host/heap.hpp:18:13: warning: ‘heap_host::max_k’ will be initialized after [-Wreorder]
+   18 |     uint8_t max_k;
+      |             ^~~~~
+host/heap.hpp:17:13: warning:   ‘uint8_t heap_host::num’ [-Wreorder]
+   17 |     uint8_t num;
+      |             ^~~
+host/heap.hpp:22:5: warning:   when initialized here [-Wreorder]
+   22 |     heap_host(uint8_t max_k = MAX_KNN_SIZE): max_k(max_k), num(0) {
+      |     ^~~~~~~~~
+host/heap.hpp: In member function ‘void heap_host::enqueue(int64_t, vector3D*)’:
+host/heap.hpp:86:17: warning: unused variable ‘pt’ [-Wunused-variable]
+   86 |         uint8_t pt;
+      |                 ^~
+host/operations.hpp: In member function ‘void pim_zd_tree::print_current_epoch()’:
+host/operations.hpp:132:60: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘uint64_t’ {aka ‘long unsigned int’} [-Wformat=]
+  132 |     void print_current_epoch() { printf("Current epoch: %llu\n", this->epoch_num); }
+      |                                                         ~~~^     ~~~~~~~~~~~~~~~
+      |                                                            |           |
+      |                                                            |           uint64_t {aka long unsigned int}
+      |                                                            long long unsigned int
+      |                                                         %lu
+host/operations.hpp: In member function ‘void pim_zd_tree::insert(vector3D*, bool)’:
+host/operations.hpp:160:52: warning: unused parameter ‘debug_print’ [-Wunused-parameter]
+  160 |     void insert(vectorT *vec_input = nullptr, bool debug_print = false) {
+      |                                               ~~~~~^~~~~~~~~~~~~~~~~~~
+host/operations.hpp: In lambda function:
+host/operations.hpp:424:34: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+  424 |                 int end_idx = (i == this->length - 1 ? total_query_num : box_dpu_num[i + 1]);
+      |                                ~~^~~~~~~~~~~~~~~~~~~
+host/operations.hpp: In lambda function:
+host/operations.hpp:482:38: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+  482 |                     int end_idx = (i == this->length - 1 ? total_query_num : box_dpu_num[i + 1]);
+      |                                    ~~^~~~~~~~~~~~~~~~~~~
+host/operations.hpp: In lambda function:
+host/operations.hpp:499:34: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int’ [-Wsign-compare]
+  499 |                     int len = (i == total_query_num - 1 ? total_return_num : return_size_seq[i + 1]) - return_size_seq[i];
+      |                                ~~^~~~~~~~~~~~~~~~~~~~~~
+host/operations.hpp: In lambda function:
+host/operations.hpp:819:42: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int’ [-Wsign-compare]
+  819 |                         int end_idx = (i == needs_further_processing_knn_num - 1 ? total_return_num : box_dpu_num[i + 1]);
+      |                                        ~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+host/operations.hpp: In member function ‘void pim_zd_tree::search_maximum_match(bool, bool, bool, uint64_t)’:
+host/operations.hpp:1039:34: warning: ignoring attributes on template argument ‘pptr’ [-Wignored-attributes]
+ 1039 |             parlay::sequence<pptr> pptr_seq_tmp;
+      |                                  ^
+host/operations.hpp: In lambda function:
+host/operations.hpp:1046:57: warning: ignoring attributes on template argument ‘pptr’ [-Wignored-attributes]
+ 1046 |                     pptr_seq_tmp = parlay::sequence<pptr>(total_node_to_fetch);
+      |                                                         ^
+host/operations.hpp: In lambda function:
+host/operations.hpp:1055:39: warning: narrowing conversion of ‘dpu_id’ from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} [-Wnarrowing]
+ 1055 |                                 .id = dpu_id,
+      |                                       ^~~~~~
+host/operations.hpp:1056:41: warning: narrowing conversion of ‘j’ from ‘int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+ 1056 |                                 .addr = j,
+      |                                         ^
+host/operations.hpp:1065:39: warning: narrowing conversion of ‘dpu_id’ from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} [-Wnarrowing]
+ 1065 |                                 .id = dpu_id,
+      |                                       ^~~~~~
+host/operations.hpp:1066:41: warning: narrowing conversion of ‘j’ from ‘int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+ 1066 |                                 .addr = j,
+      |                                         ^
+host/operations.hpp: In member function ‘void pim_zd_tree::search_maximum_match(bool, bool, bool, uint64_t)’:
+pim_base/host/macro.hpp:63:26: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+   63 | #define I64_TO_PPTR(x) (*(pptr*)&(x))
+      |                          ^~~~~~~~~~~
+host/operations.hpp:1107:45: note: in expansion of macro ‘I64_TO_PPTR’
+ 1107 |                             pptr tmp_addr = I64_TO_PPTR(fetch_return_seq[i].keys[j]);
+      |                                             ^~~~~~~~~~~
+pim_base/host/macro.hpp:63:26: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+   63 | #define I64_TO_PPTR(x) (*(pptr*)&(x))
+      |                          ^~~~~~~~~~~
+host/operations.hpp:1107:45: note: in expansion of macro ‘I64_TO_PPTR’
+ 1107 |                             pptr tmp_addr = I64_TO_PPTR(fetch_return_seq[i].keys[j]);
+      |                                             ^~~~~~~~~~~
+host/operations.hpp: In member function ‘void pim_zd_tree::fetch_all_nodes(bool, bool)’:
+host/operations.hpp:1173:34: warning: ignoring attributes on template argument ‘pptr’ [-Wignored-attributes]
+ 1173 |             parlay::sequence<pptr> pptr_seq_tmp;
+      |                                  ^
+host/operations.hpp: In lambda function:
+host/operations.hpp:1180:57: warning: ignoring attributes on template argument ‘pptr’ [-Wignored-attributes]
+ 1180 |                     pptr_seq_tmp = parlay::sequence<pptr>(total_node_to_fetch);
+      |                                                         ^
+host/operations.hpp: In lambda function:
+host/operations.hpp:1190:39: warning: narrowing conversion of ‘dpu_id’ from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} [-Wnarrowing]
+ 1190 |                                 .id = dpu_id,
+      |                                       ^~~~~~
+host/operations.hpp:1191:41: warning: narrowing conversion of ‘j’ from ‘int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+ 1191 |                                 .addr = j,
+      |                                         ^
+host/operations.hpp:1200:39: warning: narrowing conversion of ‘dpu_id’ from ‘int’ to ‘uint16_t’ {aka ‘short unsigned int’} [-Wnarrowing]
+ 1200 |                                 .id = dpu_id,
+      |                                       ^~~~~~
+host/operations.hpp:1201:41: warning: narrowing conversion of ‘j’ from ‘int’ to ‘uint32_t’ {aka ‘unsigned int’} [-Wnarrowing]
+ 1201 |                                 .addr = j,
+      |                                         ^
+host/operations.hpp: In member function ‘void pim_zd_tree::fetch_all_nodes(bool, bool)’:
+pim_base/host/macro.hpp:63:26: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+   63 | #define I64_TO_PPTR(x) (*(pptr*)&(x))
+      |                          ^~~~~~~~~~~
+host/operations.hpp:1242:45: note: in expansion of macro ‘I64_TO_PPTR’
+ 1242 |                             pptr tmp_addr = I64_TO_PPTR(fetch_return_seq[i].keys[j]);
+      |                                             ^~~~~~~~~~~
+pim_base/host/macro.hpp:63:26: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+   63 | #define I64_TO_PPTR(x) (*(pptr*)&(x))
+      |                          ^~~~~~~~~~~
+host/operations.hpp:1242:45: note: in expansion of macro ‘I64_TO_PPTR’
+ 1242 |                             pptr tmp_addr = I64_TO_PPTR(fetch_return_seq[i].keys[j]);
+      |                                             ^~~~~~~~~~~
+host/operations.hpp:1130:24: warning: unused variable ‘single_key_search_batch’ [-Wunused-variable]
+ 1130 |         IO_Task_Batch *single_key_search_batch;
+      |                        ^~~~~~~~~~~~~~~~~~~~~~~
+host/operations.hpp:1125:55: warning: unused parameter ‘debug_print’ [-Wunused-parameter]
+ 1125 |     void fetch_all_nodes(bool print_res = false, bool debug_print = false) {
+      |                                                  ~~~~~^~~~~~~~~~~~~~~~~~~
+host/host.cpp: In lambda function:
+host/host.cpp:311:36: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int’ [-Wsign-compare]
+  311 |             if(need_to_search && i < search_per_batch && search_type < 4 && search_type > 0)
+      |                                  ~~^~~~~~~~~~~~~~~~~~
+host/host.cpp: In lambda function:
+host/host.cpp:610:21: warning: unused variable ‘dpu_id’ [-Wunused-variable]
+  610 |                 int dpu_id = -1;
+      |                     ^~~~~~
+host/host.cpp: In function ‘int main(int, char**)’:
+host/host.cpp:624:45: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  624 |                     printf("Query %d: %d %lld\n", i, counts[i], zd_tree.i64_io[i]);
+      |                                          ~~~^                   ~~~~~~~~~~~~~~~~~
+      |                                             |                                   |
+      |                                             long long int                       int64_t {aka long int}
+      |                                          %ld
+host/host.cpp:639:53: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 2 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                  ~~~^
+      |                                                     |
+      |                                                     long long int
+      |                                                  %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                  |
+      |                                                                  int64_t {aka long int}
+host/host.cpp:639:58: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 3 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                       ~~~^
+      |                                                          |
+      |                                                          long long int
+      |                                                       %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+      |                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                              |
+      |                                                                                              int64_t {aka long int}
+host/host.cpp:639:63: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                            ~~~^
+      |                                                               |
+      |                                                               long long int
+      |                                                            %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+      |                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                          |
+      |                                                                                                                          int64_t {aka long int}
+host/host.cpp:639:74: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 5 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                       ~~~^
+      |                                                                          |
+      |                                                                          long long int
+      |                                                                       %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+  641 |                                         zd_tree.vector_input[i << 1].x, zd_tree.vector_input[i << 1].y, zd_tree.vector_input[i << 1].z,
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+      |                                                                      |
+      |                                                                      int64_t {aka long int}
+host/host.cpp:639:79: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 6 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                            ~~~^
+      |                                                                               |
+      |                                                                               long long int
+      |                                                                            %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+  641 |                                         zd_tree.vector_input[i << 1].x, zd_tree.vector_input[i << 1].y, zd_tree.vector_input[i << 1].z,
+      |                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                      |
+      |                                                                                                      int64_t {aka long int}
+host/host.cpp:639:84: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 7 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                                 ~~~^
+      |                                                                                    |
+      |                                                                                    long long int
+      |                                                                                 %ld
+  640 |                                         zd_tree.vector_output[j].x, zd_tree.vector_output[j].y, zd_tree.vector_output[j].z,
+  641 |                                         zd_tree.vector_input[i << 1].x, zd_tree.vector_input[i << 1].y, zd_tree.vector_input[i << 1].z,
+      |                                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                      |
+      |                                                                                                                                      int64_t {aka long int}
+host/host.cpp:639:95: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 8 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                                            ~~~^
+      |                                                                                               |
+      |                                                                                               long long int
+      |                                                                                            %ld
+......
+  642 |                                         zd_tree.vector_input[(i << 1) + 1].x, zd_tree.vector_input[(i << 1) + 1].y, zd_tree.vector_input[(i << 1) + 1].z
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                   
+      |                                                                            |
+      |                                                                            int64_t {aka long int}
+host/host.cpp:639:100: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 9 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                                                 ~~~^
+      |                                                                                                    |
+      |                                                                                                    long long int
+      |                                                                                                 %ld
+......
+  642 |                                         zd_tree.vector_input[(i << 1) + 1].x, zd_tree.vector_input[(i << 1) + 1].y, zd_tree.vector_input[(i << 1) + 1].z
+      |                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                  |
+      |                                                                                                                  int64_t {aka long int}
+host/host.cpp:639:105: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 10 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  639 |                                     printf("Vec: %lld %lld %lld\nMin: %lld %lld %lld\nMax: %lld %lld %lld\n",
+      |                                                                                                      ~~~^
+      |                                                                                                         |
+      |                                                                                                         long long int
+      |                                                                                                      %ld
+......
+  642 |                                         zd_tree.vector_input[(i << 1) + 1].x, zd_tree.vector_input[(i << 1) + 1].y, zd_tree.vector_input[(i << 1) + 1].z
+      |                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                                                                        |
+      |                                                                                                                                                        int64_t {aka long int}
+host/host.cpp:651:49: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  651 |                         printf("Query %d: %d %lld; %d\n", i, counts[i], zd_tree.i64_io[i + 1] - zd_tree.i64_io[i], sub_err_num);
+      |                                              ~~~^                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                 |                                             |
+      |                                                 long long int                                 int64_t {aka long int}
+      |                                              %ld
+host/host.cpp:620:26: warning: unused variable ‘key1’ [-Wunused-variable]
+  620 |                 uint64_t key1 = coord_to_key(&zd_tree.vector_input[i << 1]);
+      |                          ^~~~
+host/host.cpp:621:26: warning: unused variable ‘key2’ [-Wunused-variable]
+  621 |                 uint64_t key2 = coord_to_key(&zd_tree.vector_input[(i << 1) + 1]);
+      |                          ^~~~
+host/host.cpp:704:42: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 3 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  704 |                     printf("Query %d: %lld %lld\n", i, distance1, distance2);
+      |                                       ~~~^             ~~~~~~~~~
+      |                                          |             |
+      |                                          long long int int64_t {aka long int}
+      |                                       %ld
+host/host.cpp:704:47: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 4 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  704 |                     printf("Query %d: %lld %lld\n", i, distance1, distance2);
+      |                                            ~~~^                   ~~~~~~~~~
+      |                                               |                   |
+      |                                               long long int       int64_t {aka long int}
+      |                                            %ld
+host/host.cpp:705:53: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 2 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  705 |                     printf("Second round radius: %lld\n", zd_tree.i64_io[i]);
+      |                                                  ~~~^     ~~~~~~~~~~~~~~~~~
+      |                                                     |                     |
+      |                                                     long long int         int64_t {aka long int}
+      |                                                  %ld
+host/host.cpp:713:36: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 2 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  713 |                         printf("%lld ", tmp);
+      |                                 ~~~^    ~~~
+      |                                    |    |
+      |                                    |    int64_t {aka long int}
+      |                                    long long int
+      |                                 %ld
+host/host.cpp:715:36: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 2 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  715 |                         printf("%lld\n", tmp);
+      |                                 ~~~^     ~~~
+      |                                    |     |
+      |                                    |     int64_t {aka long int}
+      |                                    long long int
+      |                                 %ld
+host/host.cpp:724:36: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 2 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  724 |                         printf("%lld %lld\n", heap.distance_storage[j], tmp);
+      |                                 ~~~^          ~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                    |                                 |
+      |                                    long long int                     int64_t {aka long int}
+      |                                 %ld
+host/host.cpp:724:41: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 3 has type ‘int64_t’ {aka ‘long int’} [-Wformat=]
+  724 |                         printf("%lld %lld\n", heap.distance_storage[j], tmp);
+      |                                      ~~~^                               ~~~
+      |                                         |                               |
+      |                                         long long int                   int64_t {aka long int}
+      |                                      %ld
+host/host.cpp:277:12: warning: unused variable ‘varden_counter’ [-Wunused-variable]
+  277 |     size_t varden_counter = 0;
+      |            ^~~~~~~~~~~~~~
+host/host.cpp:300:11: warning: variable ‘tmp_coord_max’ set but not used [-Wunused-but-set-variable]
+  300 |     COORD tmp_coord_max[NR_DIMENSION];
+      |           ^~~~~~~~~~~~~
