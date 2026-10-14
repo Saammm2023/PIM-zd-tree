@@ -60,6 +60,36 @@ The lookup batch has `search_batch_size + 1` queries. The extra query, and any l
 multiple of `-I`, is a random point that is not in the dataset, so `Unmatch Num` = 1 + (`-S` mod `-I`).
 Checked: `-i 30000 -I 4 -S 2003` gives `Match Num: 2000; Unmatch Num: 4`.
 
+## Data, skew and placement
+
+| Option | Meaning |
+|---|---|
+| `--dist uniform` | uniform random points (default) |
+| `--dist zipf --zipf-s S --clusters K --cluster-width-log2 W` | K cluster centres placed uniformly; cluster rank r is chosen with probability ∝ 1/r^S; points are spread around the centre (triangular, half-width 2^W per dimension, wrapping around the space) |
+| `--seed N` | data seed. Points are a pure function of (seed, batch, index), so runs are reproducible |
+| `--placement quantile` | default. Each DPU owns a key range holding the same number of warm-up points (theta_L0 = n/P in the paper's throughput-optimized configuration) |
+| `--placement equal` | equal-width key ranges: the naive range-partitioned design (paper Sec. 3) |
+| `--verify-each-batch` | after each warm-up batch, look up every point inserted so far (slow) |
+
+Calibrated skew levels (Gini of point counts over 2048 equal key ranges, as in paper Sec. 7.2; 1M points):
+
+| Name | Options | Gini | Paper dataset |
+|---|---|---|---|
+| uniform | `--dist uniform` | 0.03 | — |
+| moderate | `--dist zipf --zipf-s 0.6 --cluster-width-log2 28` | 0.28 | COSMOS, 0.287 |
+| strong | `--dist zipf --zipf-s 1.5 --cluster-width-log2 22` | 0.98 | OSM, 0.967 |
+
+Each run prints a `Dataset:` line and, with `--stats-csv`, appends it to `<prefix>_dataset.csv`.
+
+Effect of placement, 8 DPUs, 1M points with `--zipf-s 1.0 --cluster-width-log2 22`: lookup load (slowest DPU's cycles / average)
+is 1.05 with `quantile` and 1.77 with `equal`. With strong skew, `equal` puts about 43% of the points on one DPU and
+overflows its leaf storage.
+
+What the public code does and does not implement: the top layer (L0) is a fixed key-range split done on the CPU, and
+each DPU holds the whole subtree for its range. There is no push-pull search and no L1 caching. That matches the paper's
+throughput-optimized configuration (theta_L1 = 1, chunk size n/P), except that our borders are fixed from the warm-up
+data, while the paper's L0 adapts through promotion and demotion.
+
 ## Measurement (`--stats-csv`)
 
 ```bash
@@ -94,6 +124,8 @@ timed host work.
 | `host/compile.hpp`, `Makefile` | DPU binary directory comes from `BUILDDIR` (was hard-coded to `build/`) |
 | `Makefile` | PAPI optional: `USE_PAPI ?= 0` |
 | `pim_base/host/pim_stats.hpp`, `pim_base/dpu/driver.h`, `task_framework_host.hpp`, `host/host.cpp` | per-batch DPU cycles, bytes and host time to CSV (`--stats-csv`, `--stats-tag`) |
+| `host/datagen.hpp`, `host/host.cpp` | reproducible uniform / Zipf-cluster generator, dataset Gini, `--placement quantile|equal`, `--verify-each-batch` |
+| `host/operations.hpp` (`insert`) | **bug fix**: insert tasks are grouped by target, not by consecutive run in key order (see below) |
 | `host/operations.hpp` (`insert`) | insert tasks capped at `MAX_INSERT_TASK_LEN` points; the extra points go into another insert round (see Known limits) |
 | `common/configs.h`, `dpu/configs_dpu.h` | `MRAM_BUFFER_SIZE` moved to `common/configs.h`; new `INSERT_SCRATCH_CAPACITY` / `MAX_INSERT_TASK_LEN` |
 | `dpu/single_node.h` (`p_insert`) | subtree-build queue bounded to its own quarter of the scratch (it ran into the next tasklet's area); capacity assert (only active with `ZHAOYW_DEBUG`) |
@@ -169,10 +201,28 @@ Verified (uniform data; every dataset query matches):
 - **Insert points per DPU per batch:** limited by the task area (24 B per point, about 245k) and by stored
   points per DPU; extra rounds handle task-length and task-count caps.
 - Total batch size is capped at `BATCH_SIZE` = 2.1M (host arrays); use more rounds (`-I`) for larger datasets.
-- Untested: skewed data with many identical points (more than `LEAF_SIZE` copies of one key). There is no skewed
-  generator on this branch yet, and the trie may not be able to split identical keys.
+- Many identical keys break the tree: a leaf cannot split more than `LEAF_SIZE` (16) copies of one key. Keys keep the
+  top 21 bits of each coordinate, so points closer than 1024 in every dimension share a key. An early version of the
+  generator clamped wide clusters at the edges of the space; that piled points onto the faces and filled
+  internal-node storage. The generator now wraps around.
 - `Bnode.subtree_size` is `int16_t`, so it wraps above 32767 points per subtree. It is used only for range-query
   pruning, not for insert or point lookup.
 - Memory: 64 DPUs with 8M points peaks at about 3.0 GB RSS; 32 DPUs with 4M at about 2.2 GB.
 - Simulator wall-clock time is not a performance result. Use DPU cycle counters and modelled transfer cost.
 - Extra insert rounds count toward that batch's measured cost; report them for first-batch or large-batch runs.
+
+### Lost points with skewed data (fixed)
+
+With Zipf-cluster data, lookups of points inserted in earlier batches failed: for example, 27 of 80,000 points were
+lost when batch 3 of `-i 20000 -I 5 --zipf-s 1.0` was inserted on 8 DPUs. This was deterministic (it also happened
+with one tasklet). The cause was in the authors' host code:
+`insert()` sorts points by key and groups *consecutive* points with the same search result into one task. New points
+on both sides of an existing subtree C mismatch C's compressed edge, so they all target the same edge above C (same
+parent and slot). C's own descendants sit between them in key order, so the host sent two tasks for one edge. The first
+task inserted a node N above C. The second treated N as the original child and built another node at a height inside
+N's prefix, which disconnected most of C's subtree. Dense clusters make this common, while uniform data rarely triggers it.
+
+Fix: stable-sort the search results by target before building tasks, so each target gets one task with its points in
+key order (paper Alg. 2 step 2d: the CPU deduplicates conflicting inserts). Verified with `--verify-each-batch` on 8 and
+64 DPUs, for uniform, moderate and strong skew at 1M points: every point is found after every batch.
+

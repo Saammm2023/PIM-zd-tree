@@ -16,6 +16,7 @@
 
 #include "host.hpp"
 #include "operations.hpp"
+#include "datagen.hpp"
 
 using namespace std;
 
@@ -36,6 +37,13 @@ int top_level_threads;
 std::string interface_type;
 std::string stats_csv_prefix;
 std::string stats_tag;
+std::string data_dist;
+double zipf_s;
+int nr_clusters;
+int cluster_width_log2;
+int data_seed;
+std::string placement;
+bool verify_each_batch;
 COORD input_coord_max[NR_DIMENSION];
 
 void host_parse_arguments(int argc, char *argv[]) {
@@ -101,6 +109,32 @@ void host_parse_arguments(int argc, char *argv[]) {
     parser.add_argument("--stats-tag")
         .help("Label written to every stats row (e.g. the data distribution)")
         .default_value(std::string(""));
+    parser.add_argument("--dist")
+        .help("Point distribution for inserted data: uniform or zipf (Zipf-weighted clusters)")
+        .default_value(std::string("uniform"));
+    parser.add_argument("--zipf-s")
+        .help("Zipf exponent over clusters (larger = more skew)")
+        .default_value(1.0)
+        .scan<'g', double>();
+    parser.add_argument("--clusters")
+        .help("Number of clusters for --dist zipf")
+        .default_value(1024)
+        .scan<'i', int>();
+    parser.add_argument("--cluster-width-log2")
+        .help("Cluster half-width per dimension is 2^this (coordinates are 31-bit)")
+        .default_value(22)
+        .scan<'i', int>();
+    parser.add_argument("--placement")
+        .help("Key ranges per DPU: quantile (equal points per DPU, from the warm-up data) or equal (equal-width ranges)")
+        .default_value(std::string("quantile"));
+    parser.add_argument("--verify-each-batch")
+        .help("After every warm-up batch, look up all points inserted so far (slow; correctness check)")
+        .default_value(false)
+        .implicit_value(true);
+    parser.add_argument("--seed")
+        .help("Seed for the data generator")
+        .default_value(1)
+        .scan<'i', int>();
 
     parser.parse_args(argc, argv);
 
@@ -119,6 +153,17 @@ void host_parse_arguments(int argc, char *argv[]) {
     top_level_threads  = parser.get<int>("--top-level-threads");
     stats_csv_prefix   = parser.get<std::string>("--stats-csv");
     stats_tag          = parser.get<std::string>("--stats-tag");
+    data_dist          = parser.get<std::string>("--dist");
+    zipf_s             = parser.get<double>("--zipf-s");
+    nr_clusters        = parser.get<int>("--clusters");
+    cluster_width_log2 = parser.get<int>("--cluster-width-log2");
+    data_seed          = parser.get<int>("--seed");
+    placement          = parser.get<std::string>("--placement");
+    verify_each_batch  = parser.get<bool>("--verify-each-batch");
+    if(placement != "quantile" && placement != "equal") {
+        fprintf(stderr, "unknown --placement %s (use quantile or equal)\n", placement.c_str());
+        exit(1);
+    }
 
     for (int i = 0; i < NR_DIMENSION; ++i)
         input_coord_max[i] = INT32_MAX;
@@ -132,6 +177,10 @@ int main(int argc, char *argv[]) {
     host_parse_arguments(argc, argv);
     host_init(interface_type);
     pim_stats::configure(stats_csv_prefix, stats_tag, nr_of_dpus);
+    if(!datagen::init(data_dist, zipf_s, nr_clusters, cluster_width_log2, (uint64_t)data_seed)) {
+        fprintf(stderr, "unknown --dist %s (use uniform or zipf)\n", data_dist.c_str());
+        return 1;
+    }
     
     pim_zd_tree zd_tree;
     pim_zd_tree *zd_forest[maxTopLevelThreads];
@@ -185,6 +234,22 @@ int main(int argc, char *argv[]) {
     parfor_wrap(1, nr_of_dpus, [&](size_t i) {
         zd_tree.partition_borders[i] = UINT64_MAX / nr_of_dpus * i;
     });
+    if(placement == "quantile") {
+        // Each DPU owns a key range holding the same number of warm-up points: the throughput-optimized
+        // PIM-zd-tree splits L0 by subtree size (theta_L0 = n/P), so every subtree below L0 has about n/P
+        // points. The borders are fixed from the warm-up data rather than maintained dynamically.
+        auto keys = parlay::tabulate(total_insert_size, [&](size_t i) {
+            vectorT v = datagen::point(1, i);
+            return coord_to_key(&v);
+        });
+        parlay::sort_inplace(keys);
+        for(int i = 1; i < nr_of_dpus; i++) {
+            uint64_t b = keys[(size_t)((__int128)total_insert_size * i / nr_of_dpus)];
+            zd_tree.partition_borders[i] = std::max(b, zd_tree.partition_borders[i - 1] + 1);
+        }
+        zd_tree.key_to_dpu_id_mode = 1;
+    }
+    printf("Placement: %s\n", placement.c_str());
     COORD tmp_coord_max[NR_DIMENSION];
     for(int i = 0; i < NR_DIMENSION; i++) {
         tmp_coord_max[i] = COORD_MAX;
@@ -194,16 +259,7 @@ int main(int argc, char *argv[]) {
     for(int j = 0; j < insert_round; j++) {
         zd_tree.length = insert_batch_size;
         parfor_wrap(0, zd_tree.length, [&](size_t i) {
-#if NR_DIMENSION == 2
-            zd_tree.vector_input[i].x = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            zd_tree.vector_input[i].y = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#elif NR_DIMENSION == 3
-            zd_tree.vector_input[i].x = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            zd_tree.vector_input[i].y = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            zd_tree.vector_input[i].z = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#else
-            for(int j = 0; j < NR_DIMENSION; j++) zd_tree.vector_input[i].x[j] = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#endif
+            zd_tree.vector_input[i] = datagen::point(1, (uint64_t)j * insert_batch_size + i);
             if(need_to_search && search_type != 1) vec_dataset[j * insert_batch_size + i] = zd_tree.vector_input[i];
             if(need_to_search && i < search_per_batch && search_type < 4 && search_type > 0)
                 vecs[j * search_per_batch + i] = zd_tree.vector_input[i];
@@ -211,8 +267,45 @@ int main(int argc, char *argv[]) {
         pim_stats::begin("warmup_insert", j, insert_batch_size);
         zd_tree.insert(zd_tree.vector_input, debug_print);
         pim_stats::end();
+        if(verify_each_batch) {
+            // Look up every point inserted so far; each should match exactly (Unmatch Num: 0)
+            cpu_coverage_timer->start();
+            dpu_binary_switch_to(dpu_binary::misc_binary);
+            cpu_coverage_timer->end();
+            zd_tree.length = (int64_t)(j + 1) * insert_batch_size;
+            parfor_wrap(0, zd_tree.length, [&](size_t i) { zd_tree.vector_input[i] = datagen::point(1, i); });
+            printf("Verify after warm-up batch %d: ", j);
+            zd_tree.search_maximum_match(true, false, false);
+            cpu_coverage_timer->start();
+            dpu_binary_switch_to(dpu_binary::insert_binary);
+            cpu_coverage_timer->end();
+        }
     }
-    
+
+    {
+        // Skew of the warm-up data set, as in paper Sec. 7.2: Gini of point counts over equal key ranges
+        auto dataset = parlay::tabulate(total_insert_size, [&](size_t i) { return datagen::point(1, i); });
+        double gini_2048 = datagen::key_range_gini(dataset.data(), dataset.size(), 2048);
+        double gini_dpus = datagen::key_range_gini(dataset.data(), dataset.size(), nr_of_dpus);
+        printf("Dataset: dist=%s zipf_s=%g clusters=%d width_log2=%d points=%lld gini_2048=%.4f gini_%d_bins=%.4f\n",
+               datagen::dist_name(), zipf_s, nr_clusters, cluster_width_log2, (long long)total_insert_size,
+               gini_2048, nr_of_dpus, gini_dpus);
+        if(!stats_csv_prefix.empty()) {
+            std::string path = stats_csv_prefix + "_dataset.csv";
+            FILE* f = fopen(path.c_str(), "r");
+            bool new_file = (f == nullptr);
+            if(f != nullptr) fclose(f);
+            f = fopen(path.c_str(), "a");
+            if(f != nullptr) {
+                if(new_file) fputs("tag,nr_dpus,dist,zipf_s,clusters,width_log2,seed,points,gini_2048,gini_dpu_bins\n", f);
+                fprintf(f, "%s,%d,%s,%g,%d,%d,%d,%lld,%.4f,%.4f\n", stats_tag.c_str(), nr_of_dpus,
+                        datagen::dist_name(), zipf_s, nr_clusters, cluster_width_log2, data_seed,
+                        (long long)total_insert_size, gini_2048, gini_dpus);
+                fclose(f);
+            }
+        }
+    }
+
     if(print_timer) {
         cout<<"Total dataset size: "<<pim_zd_tree::nr_points.load()<<endl;
         cout<<dec<<"------------- Init timers -------------"<<endl;
@@ -245,16 +338,7 @@ int main(int argc, char *argv[]) {
         zd_tree.length = test_batch_size;
         vectorT *vec_to_search = new vectorT[test_round * test_batch_size];
         parfor_wrap(0, test_round * test_batch_size, [&](size_t i) {
-#if NR_DIMENSION == 2
-            vec_to_search[i].x = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            vec_to_search[i].y = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#elif NR_DIMENSION == 3
-            vec_to_search[i].x = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            vec_to_search[i].y = abs(rn_gen::parallel_rand()) & COORD_MAX;
-            vec_to_search[i].z = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#else
-            for(int j = 0; j < NR_DIMENSION; j++) vec_to_search[i].x[j] = abs(rn_gen::parallel_rand()) & COORD_MAX;
-#endif
+            vec_to_search[i] = datagen::point(2, i);
         });
         
         timer_program_start = std::chrono::high_resolution_clock::now();

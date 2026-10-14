@@ -206,6 +206,25 @@ public:
             });
 
             time_nested("insert_vector", [&]() {
+                time_nested("group by target", [&]() {
+                    // Points are in key order, but points bound for the same target are not always
+                    // contiguous: new points on both sides of an existing subtree C both target the edge
+                    // above C (same parent and slot). Two tasks for one edge make the second edge split
+                    // build on top of the first one's node and disconnect C. Stable-sort by target so each
+                    // target gets exactly one task, with its points still in key order.
+                    auto perm = parlay::tabulate(this->length, [](size_t i) { return (uint32_t)i; });
+                    parlay::sort_inplace(perm, [&](uint32_t a, uint32_t b) {
+                        const pptr &x = this->op_addrs[a], &y = this->op_addrs[b];
+                        if(x.id != y.id) return x.id < y.id;
+                        if(x.addr != y.addr) return x.addr < y.addr;
+                        if(x.data_type != y.data_type) return x.data_type < y.data_type;
+                        if(x.info != y.info) return x.info < y.info;
+                        return a < b;
+                    });
+                    auto sorted_addrs = parlay::tabulate(this->length, [&](size_t i) { return this->op_addrs[perm[i]]; });
+                    key_idx_seq = parlay::tabulate(this->length, [&](size_t i) { return key_idx_seq[perm[i]]; });
+                    parfor_wrap(0, this->length, [&](size_t i) { this->op_addrs[i] = sorted_addrs[i]; });
+                });
                 time_nested("taskgen", [&]() {
                     io = alloc_io_manager();
                     io->init();
