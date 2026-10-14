@@ -1,0 +1,1549 @@
+------------------- Start ---------------------
+rand init: tn = 20
+Allocated 32 DPU(s)
+Interface detected 32 DPU(s)
+Interface detected 32 Ranks(s)
+UPMEM interface to DPUs
+ -> switchto1
+ -> switchto1 -> lock
+Interface detected 32 DPU(s)
+Interface detected 32 Ranks(s)
+ -> switchto1 -> unlock
+
+********** INIT DPUS **********
+ -> lock
+ -> send
+ -> send -> pre send
+ -> send -> trigger
+ -> dpu
+ -> dpu -> wait
+ -> receive
+ -> receive -> pre_working
+ -> unlock
+
+****** INIT DPUS Finished ******
+---------------- Timer Init ---------------
+------------- Data Structure Init ------------
+ -> switchto1
+Placement: equal
+Current epoch: 0
+
+********** INIT RANGES **********
+ -> lock
+ -> send
+ -> send -> pre send
+ -> send -> trigger
+ -> dpu
+ -> dpu -> wait
+ -> receive
+ -> receive -> pre_working
+ -> unlock
+
+****** INIT RANGES Finished ******
+Current epoch: 0
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 1
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 2
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 3
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 4
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 5
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 6
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 7
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 8
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 9
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Dataset: dist=zipf zipf_s=0.6 clusters=1024 width_log2=28 points=800000 gini_2048=0.2765 gini_32_bins=0.1190
+Total dataset size: 800000
+------------- Init timers -------------
+timer count: 1
+Timer 0: 
+/----------------------------------------\
+Timer -> dpu: 
+        Average Time : 0.00372589
+          Total Time : 0.00745177
+Proportion: 
+ -> wait             : 98 % : 0.00365515
+ -> other            : 1  %
+Details: 0.004462 0.002990 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> dpu -> wait: 
+Average Time         : 0.00365515
+Total Time           : 0.0073103
+Proportion: 
+ -> other            : 100%
+Details: 0.004420 0.002891 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert: 
+Average Time         : 0.497274
+Total Time           : 4.97274
+Proportion: 
+ -> init             : 0  % : 0.00203373
+ -> insert_vector    : 67 % : 0.305999
+ -> search           : 31 % : 0.144012
+ -> other            : 0  %
+Details: 0.374902 0.432526 0.421027 0.427552 0.456841 0.507685 0.538744 0.582046 0.606933 0.624488 
+Occurance: 10
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> init: 
+Average Time         : 0.00203373
+Total Time           : 0.022371
+Proportion: 
+ -> other            : 100%
+Details: 0.002607 0.000197 0.002092 0.002245 0.002088 0.002149 0.002100 0.002606 0.002225 0.001987 0.002075 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector: 
+Average Time         : 0.305999
+Total Time           : 3.36599
+Proportion: 
+ -> exec             : 99 % : 0.304575
+ -> get result       : 0  % : 2.53364e-07
+ -> group by target  : 0  % : 0.000686535
+ -> taskgen          : 0  % : 0.000710484
+ -> other            : 0  %
+Details: 0.190621 0.076208 0.277007 0.260579 0.260669 0.299150 0.336031 0.370232 0.407645 0.442735 0.445112 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec: 
+Average Time         : 0.304575
+Total Time           : 3.35033
+Proportion: 
+ -> dpu              : 99 % : 0.304185
+ -> lock             : 0  % : 2.63818e-07
+ -> receive          : 0  % : 4.29164e-06
+ -> send             : 0  % : 0.000253476
+ -> unlock           : 0  % : 2.41091e-07
+ -> other            : 0  %
+Details: 0.189430 0.075921 0.275647 0.258745 0.258992 0.297658 0.334637 0.368594 0.406073 0.441181 0.443448 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> dpu: 
+Average Time         : 0.304185
+Total Time           : 3.34603
+Proportion: 
+ -> wait             : 91 % : 0.277139
+ -> other            : 8  %
+Details: 0.189116 0.075645 0.275244 0.258298 0.258619 0.297171 0.334256 0.368213 0.405653 0.440760 0.443061 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> dpu -> wait: 
+Average Time         : 0.277139
+Total Time           : 3.04853
+Proportion: 
+ -> other            : 100%
+Details: 0.189068 0.075616 0.275205 0.258262 0.258575 0.000073 0.334207 0.368176 0.405612 0.440723 0.443016 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> lock: 
+Average Time         : 2.63818e-07
+Total Time           : 2.902e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> receive: 
+Average Time         : 4.29164e-06
+Total Time           : 4.7208e-05
+Proportion: 
+ -> pre_working      : 14 % : 6.22091e-07
+ -> other            : 85 %
+Details: 0.000004 0.000004 0.000004 0.000006 0.000005 0.000004 0.000005 0.000003 0.000005 0.000004 0.000004 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> receive -> pre_working: 
+Average Time         : 6.22091e-07
+Total Time           : 6.843e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000001 0.000000 0.000001 0.000001 0.000001 0.000001 0.000000 0.000001 0.000001 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send: 
+Average Time         : 0.000253476
+Total Time           : 0.00278824
+Proportion: 
+ -> pre send         : 0  % : 1.53273e-06
+ -> trigger          : 97 % : 0.000246102
+ -> other            : 2  %
+Details: 0.000145 0.000147 0.000251 0.000293 0.000233 0.000371 0.000246 0.000256 0.000275 0.000289 0.000282 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send -> pre send: 
+Average Time         : 1.53273e-06
+Total Time           : 1.686e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 0.000001 0.000002 0.000002 0.000001 0.000002 0.000002 0.000002 0.000002 0.000002 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send -> trigger: 
+Average Time         : 0.000246102
+Total Time           : 0.00270712
+Proportion: 
+ -> other            : 100%
+Details: 0.000138 0.000142 0.000240 0.000285 0.000225 0.000365 0.000240 0.000249 0.000269 0.000280 0.000274 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> unlock: 
+Average Time         : 2.41091e-07
+Total Time           : 2.652e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> get result: 
+Average Time         : 2.53364e-07
+Total Time           : 2.787e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> group by target: 
+Average Time         : 0.000686535
+Total Time           : 0.00755189
+Proportion: 
+ -> other            : 100%
+Details: 0.000767 0.000179 0.000765 0.000805 0.000782 0.000706 0.000684 0.000720 0.000740 0.000710 0.000695 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> taskgen: 
+Average Time         : 0.000710484
+Total Time           : 0.00781532
+Proportion: 
+ -> other            : 100%
+Details: 0.000389 0.000099 0.000561 0.000986 0.000872 0.000767 0.000686 0.000892 0.000790 0.000822 0.000951 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search: 
+Average Time         : 0.144012
+Total Time           : 1.58413
+Proportion: 
+ -> exec             : 99 % : 0.14384
+ -> get result       : 0  % : 6.17601e-05
+ -> taskgen          : 0  % : 9.87201e-05
+ -> other            : 0  %
+Details: 0.072941 0.032285 0.153408 0.158175 0.164774 0.155523 0.169527 0.165874 0.172152 0.162187 0.177281 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec: 
+Average Time         : 0.14384
+Total Time           : 1.58224
+Proportion: 
+ -> dpu              : 99 % : 0.143454
+ -> lock             : 0  % : 2.85909e-07
+ -> receive          : 0  % : 0.000124373
+ -> send             : 0  % : 0.000122559
+ -> unlock           : 0  % : 2.90182e-07
+ -> other            : 0  %
+Details: 0.072660 0.032245 0.153234 0.157991 0.164609 0.155357 0.169349 0.165678 0.171967 0.162024 0.177131 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> dpu: 
+Average Time         : 0.143454
+Total Time           : 1.57799
+Proportion: 
+ -> wait             : 79 % : 0.113958
+ -> other            : 20 %
+Details: 0.072128 0.031891 0.152867 0.157611 0.164288 0.155050 0.168927 0.165309 0.171441 0.161701 0.176780 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> dpu -> wait: 
+Average Time         : 0.113958
+Total Time           : 1.25354
+Proportion: 
+ -> other            : 100%
+Details: 0.072105 0.031860 0.000069 0.157576 0.164241 0.155004 0.168901 0.165257 0.000130 0.161662 0.176735 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> lock: 
+Average Time         : 2.85909e-07
+Total Time           : 3.145e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive: 
+Average Time         : 0.000124373
+Total Time           : 0.00136811
+Proportion: 
+ -> more fetching    : 0  % : 1.11391e-06
+ -> post receiving   : 2  % : 3.11036e-06
+ -> pre_working      : 0  % : 8.38909e-07
+ -> trigger          : 78 % : 9.72585e-05
+ -> other            : 17 %
+Details: 0.000141 0.000120 0.000128 0.000130 0.000100 0.000106 0.000133 0.000112 0.000218 0.000095 0.000085 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> more fetching: 
+Average Time         : 1.11391e-06
+Total Time           : 1.2253e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000002 0.000001 0.000002 0.000001 0.000001 0.000001 0.000001 0.000001 0.000002 0.000001 0.000001 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> post receiving: 
+Average Time         : 3.11036e-06
+Total Time           : 3.4214e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000003 0.000007 0.000003 0.000003 0.000002 0.000003 0.000002 0.000003 0.000003 0.000002 0.000002 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> pre_working: 
+Average Time         : 8.38909e-07
+Total Time           : 9.228e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000002 0.000001 0.000001 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> trigger: 
+Average Time         : 9.72585e-05
+Total Time           : 0.00106984
+Proportion: 
+ -> other            : 100%
+Details: 0.000104 0.000089 0.000091 0.000099 0.000088 0.000077 0.000109 0.000095 0.000164 0.000082 0.000071 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send: 
+Average Time         : 0.000122559
+Total Time           : 0.00134815
+Proportion: 
+ -> pre send         : 1  % : 1.51855e-06
+ -> trigger          : 92 % : 0.00011279
+ -> other            : 6  %
+Details: 0.000252 0.000089 0.000103 0.000102 0.000108 0.000096 0.000134 0.000111 0.000139 0.000103 0.000111 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send -> pre send: 
+Average Time         : 1.51855e-06
+Total Time           : 1.6704e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 0.000002 0.000001 0.000002 0.000001 0.000002 0.000001 0.000002 0.000001 0.000001 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send -> trigger: 
+Average Time         : 0.00011279
+Total Time           : 0.00124069
+Proportion: 
+ -> other            : 100%
+Details: 0.000246 0.000082 0.000095 0.000086 0.000102 0.000091 0.000126 0.000104 0.000108 0.000094 0.000106 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> unlock: 
+Average Time         : 2.90182e-07
+Total Time           : 3.192e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> get result: 
+Average Time         : 6.17601e-05
+Total Time           : 0.000679361
+Proportion: 
+ -> other            : 100%
+Details: 0.000096 0.000012 0.000064 0.000073 0.000065 0.000069 0.000072 0.000063 0.000060 0.000060 0.000045 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> taskgen: 
+Average Time         : 9.87201e-05
+Total Time           : 0.00108592
+Proportion: 
+ -> other            : 100%
+Details: 0.000166 0.000023 0.000100 0.000102 0.000090 0.000091 0.000097 0.000121 0.000102 0.000095 0.000098 
+Occurance: 11
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> lock: 
+Average Time         : 8.685e-07
+Total Time           : 1.737e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000001 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> receive: 
+Average Time         : 1.14175e-05
+Total Time           : 2.2835e-05
+Proportion: 
+ -> pre_working      : 6  % : 6.925e-07
+ -> other            : 93 %
+Details: 0.000018 0.000005 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> receive -> pre_working: 
+Average Time         : 6.925e-07
+Total Time           : 1.385e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> send: 
+Average Time         : 0.000236516
+Total Time           : 0.000473032
+Proportion: 
+ -> pre send         : 0  % : 1.184e-06
+ -> trigger          : 94 % : 0.000223343
+ -> other            : 5  %
+Details: 0.000167 0.000306 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> send -> pre send: 
+Average Time         : 1.184e-06
+Total Time           : 2.368e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> send -> trigger: 
+Average Time         : 0.000223343
+Total Time           : 0.000446687
+Proportion: 
+ -> other            : 100%
+Details: 0.000152 0.000295 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> switchto1: 
+Average Time         : 0.000361264
+Total Time           : 0.000722529
+Proportion: 
+ -> lock             : 0  % : 1.76e-07
+ -> unlock           : 1  % : 1.06e-05
+ -> other            : 98 %
+Details: 0.000722 0.000000 
+Occurance: 2
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> switchto1 -> lock: 
+Average Time         : 1.76e-07
+Total Time           : 1.76e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 
+Occurance: 1
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> switchto1 -> unlock: 
+Average Time         : 1.06e-05
+Total Time           : 1.06e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000011 
+Occurance: 1
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> unlock: 
+Average Time         : 2.47e-07
+Total Time           : 4.94e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 
+Occurance: 2
+\----------------------------------------/
+
+timer count: 1
+Timer 0: 
+ -> dpu
+ -> dpu -> wait
+ -> insert
+ -> insert -> init
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> search
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> search -> taskgen
+ -> lock
+ -> receive
+ -> receive -> pre_working
+ -> send
+ -> send -> pre send
+ -> send -> trigger
+ -> switchto1
+ -> switchto1 -> lock
+ -> switchto1 -> unlock
+ -> unlock
+timer count: 1
+Timer 0: 
+Average Time: 0.003726
+Average Time: 0.003655
+Average Time: 0.497274
+Average Time: 0.002034
+Average Time: 0.305999
+Average Time: 0.304575
+Average Time: 0.304185
+Average Time: 0.277139
+Average Time: 0.000000
+Average Time: 0.000004
+Average Time: 0.000001
+Average Time: 0.000253
+Average Time: 0.000002
+Average Time: 0.000246
+Average Time: 0.000000
+Average Time: 0.000000
+Average Time: 0.000687
+Average Time: 0.000710
+Average Time: 0.144012
+Average Time: 0.143840
+Average Time: 0.143454
+Average Time: 0.113958
+Average Time: 0.000000
+Average Time: 0.000124
+Average Time: 0.000001
+Average Time: 0.000003
+Average Time: 0.000001
+Average Time: 0.000097
+Average Time: 0.000123
+Average Time: 0.000002
+Average Time: 0.000113
+Average Time: 0.000000
+Average Time: 0.000062
+Average Time: 0.000099
+Average Time: 0.000001
+Average Time: 0.000011
+Average Time: 0.000001
+Average Time: 0.000237
+Average Time: 0.000001
+Average Time: 0.000223
+Average Time: 0.000361
+Average Time: 0.000000
+Average Time: 0.000011
+Average Time: 0.000000
+timer count: 1
+Timer 0: 
+ -> switchto1
+Current epoch: 0
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 1
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+Current epoch: 2
+ -> insert
+ -> insert -> init
+ -> insert -> search
+ -> insert -> search -> taskgen
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+------------- Test timers -------------
+timer count: 1
+Timer 0: 
+/----------------------------------------\
+Timer -> insert: 
+Average Time         : 0.422917
+Total Time           : 1.26875
+Proportion: 
+ -> init             : 0  % : 0.00139112
+ -> insert_vector    : 73 % : 0.312635
+ -> search           : 25 % : 0.108872
+ -> other            : 0  %
+Details: 0.416099 0.409001 0.443653 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> init: 
+Average Time         : 0.00139112
+Total Time           : 0.00417335
+Proportion: 
+ -> other            : 100%
+Details: 0.001455 0.001347 0.001372 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector: 
+Average Time         : 0.312635
+Total Time           : 0.937906
+Proportion: 
+ -> exec             : 99 % : 0.311337
+ -> get result       : 0  % : 2.53333e-07
+ -> group by target  : 0  % : 0.000640422
+ -> taskgen          : 0  % : 0.000629153
+ -> other            : 0  %
+Details: 0.307931 0.305373 0.324603 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec: 
+Average Time         : 0.311337
+Total Time           : 0.934012
+Proportion: 
+ -> dpu              : 99 % : 0.310986
+ -> lock             : 0  % : 2.78333e-07
+ -> receive          : 0  % : 5.31267e-06
+ -> send             : 0  % : 0.000206102
+ -> unlock           : 0  % : 2.43333e-07
+ -> other            : 0  %
+Details: 0.306800 0.304011 0.323201 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> dpu: 
+Average Time         : 0.310986
+Total Time           : 0.932959
+Proportion: 
+ -> wait             : 99 % : 0.310955
+ -> other            : 0  %
+Details: 0.306521 0.303652 0.322786 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> dpu -> wait: 
+Average Time         : 0.310955
+Total Time           : 0.932866
+Proportion: 
+ -> other            : 100%
+Details: 0.306493 0.303625 0.322748 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> lock: 
+Average Time         : 2.78333e-07
+Total Time           : 8.35e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> receive: 
+Average Time         : 5.31267e-06
+Total Time           : 1.5938e-05
+Proportion: 
+ -> pre_working      : 11 % : 6.09667e-07
+ -> other            : 88 %
+Details: 0.000004 0.000008 0.000004 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> receive -> pre_working: 
+Average Time         : 6.09667e-07
+Total Time           : 1.829e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000000 0.000001 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send: 
+Average Time         : 0.000206102
+Total Time           : 0.000618307
+Proportion: 
+ -> pre send         : 1  % : 2.26133e-06
+ -> trigger          : 96 % : 0.000198587
+ -> other            : 2  %
+Details: 0.000177 0.000173 0.000268 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send -> pre send: 
+Average Time         : 2.26133e-06
+Total Time           : 6.784e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000002 0.000002 0.000003 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> send -> trigger: 
+Average Time         : 0.000198587
+Total Time           : 0.00059576
+Proportion: 
+ -> other            : 100%
+Details: 0.000171 0.000166 0.000259 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> exec -> unlock: 
+Average Time         : 2.43333e-07
+Total Time           : 7.3e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> get result: 
+Average Time         : 2.53333e-07
+Total Time           : 7.6e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> group by target: 
+Average Time         : 0.000640422
+Total Time           : 0.00192127
+Proportion: 
+ -> other            : 100%
+Details: 0.000585 0.000624 0.000712 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> insert_vector -> taskgen: 
+Average Time         : 0.000629153
+Total Time           : 0.00188746
+Proportion: 
+ -> other            : 100%
+Details: 0.000523 0.000717 0.000648 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search: 
+Average Time         : 0.108872
+Total Time           : 0.326617
+Proportion: 
+ -> exec             : 99 % : 0.108733
+ -> get result       : 0  % : 4.99733e-05
+ -> taskgen          : 0  % : 7.82203e-05
+ -> other            : 0  %
+Details: 0.106699 0.102265 0.117654 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec: 
+Average Time         : 0.108733
+Total Time           : 0.3262
+Proportion: 
+ -> dpu              : 99 % : 0.108412
+ -> lock             : 0  % : 3.06e-07
+ -> receive          : 0  % : 9.71237e-05
+ -> send             : 0  % : 0.000110083
+ -> unlock           : 0  % : 2.85667e-07
+ -> other            : 0  %
+Details: 0.106556 0.102146 0.117498 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> dpu: 
+Average Time         : 0.108412
+Total Time           : 0.325236
+Proportion: 
+ -> wait             : 63 % : 0.068699
+ -> other            : 36 %
+Details: 0.106224 0.101838 0.117174 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> dpu -> wait: 
+Average Time         : 0.068699
+Total Time           : 0.206097
+Proportion: 
+ -> other            : 100%
+Details: 0.106201 0.099816 0.000080 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> lock: 
+Average Time         : 3.06e-07
+Total Time           : 9.18e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive: 
+Average Time         : 9.71237e-05
+Total Time           : 0.000291371
+Proportion: 
+ -> more fetching    : 1  % : 1.175e-06
+ -> post receiving   : 3  % : 3.86533e-06
+ -> pre_working      : 0  % : 7.34333e-07
+ -> trigger          : 77 % : 7.5385e-05
+ -> other            : 16 %
+Details: 0.000088 0.000090 0.000113 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> more fetching: 
+Average Time         : 1.175e-06
+Total Time           : 3.525e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 0.000002 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> post receiving: 
+Average Time         : 3.86533e-06
+Total Time           : 1.1596e-05
+Proportion: 
+ -> other            : 100%
+Details: 0.000002 0.000002 0.000007 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> pre_working: 
+Average Time         : 7.34333e-07
+Total Time           : 2.203e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000001 0.000001 0.000001 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> receive -> trigger: 
+Average Time         : 7.5385e-05
+Total Time           : 0.000226155
+Proportion: 
+ -> other            : 100%
+Details: 0.000072 0.000068 0.000087 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send: 
+Average Time         : 0.000110083
+Total Time           : 0.000330249
+Proportion: 
+ -> pre send         : 1  % : 1.51467e-06
+ -> trigger          : 93 % : 0.000103424
+ -> other            : 4  %
+Details: 0.000152 0.000088 0.000090 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send -> pre send: 
+Average Time         : 1.51467e-06
+Total Time           : 4.544e-06
+Proportion: 
+ -> other            : 100%
+Details: 0.000002 0.000001 0.000001 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> send -> trigger: 
+Average Time         : 0.000103424
+Total Time           : 0.000310271
+Proportion: 
+ -> other            : 100%
+Details: 0.000143 0.000084 0.000084 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> exec -> unlock: 
+Average Time         : 2.85667e-07
+Total Time           : 8.57e-07
+Proportion: 
+ -> other            : 100%
+Details: 0.000000 0.000000 0.000000 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> get result: 
+Average Time         : 4.99733e-05
+Total Time           : 0.00014992
+Proportion: 
+ -> other            : 100%
+Details: 0.000038 0.000037 0.000074 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> insert -> search -> taskgen: 
+Average Time         : 7.82203e-05
+Total Time           : 0.000234661
+Proportion: 
+ -> other            : 100%
+Details: 0.000095 0.000072 0.000068 
+Occurance: 3
+\----------------------------------------/
+
+/----------------------------------------\
+Timer -> switchto1: 
+Average Time         : 4.7e-07
+Total Time           : 4.7e-07
+Proportion: 
+ -> lock             : 0  % : -nan
+ -> unlock           : 0  % : -nan
+ -> other            : 100%
+Details: 0.000000 
+Occurance: 1
+\----------------------------------------/
+
+timer count: 1
+Timer 0: 
+ -> insert
+ -> insert -> init
+ -> insert -> insert_vector
+ -> insert -> insert_vector -> exec
+ -> insert -> insert_vector -> exec -> dpu
+ -> insert -> insert_vector -> exec -> dpu -> wait
+ -> insert -> insert_vector -> exec -> lock
+ -> insert -> insert_vector -> exec -> receive
+ -> insert -> insert_vector -> exec -> receive -> pre_working
+ -> insert -> insert_vector -> exec -> send
+ -> insert -> insert_vector -> exec -> send -> pre send
+ -> insert -> insert_vector -> exec -> send -> trigger
+ -> insert -> insert_vector -> exec -> unlock
+ -> insert -> insert_vector -> get result
+ -> insert -> insert_vector -> group by target
+ -> insert -> insert_vector -> taskgen
+ -> insert -> search
+ -> insert -> search -> exec
+ -> insert -> search -> exec -> dpu
+ -> insert -> search -> exec -> dpu -> wait
+ -> insert -> search -> exec -> lock
+ -> insert -> search -> exec -> receive
+ -> insert -> search -> exec -> receive -> more fetching
+ -> insert -> search -> exec -> receive -> post receiving
+ -> insert -> search -> exec -> receive -> pre_working
+ -> insert -> search -> exec -> receive -> trigger
+ -> insert -> search -> exec -> send
+ -> insert -> search -> exec -> send -> pre send
+ -> insert -> search -> exec -> send -> trigger
+ -> insert -> search -> exec -> unlock
+ -> insert -> search -> get result
+ -> insert -> search -> taskgen
+ -> switchto1
+timer count: 1
+Timer 0: 
+Average Time: 0.422917
+Average Time: 0.001391
+Average Time: 0.312635
+Average Time: 0.311337
+Average Time: 0.310986
+Average Time: 0.310955
+Average Time: 0.000000
+Average Time: 0.000005
+Average Time: 0.000001
+Average Time: 0.000206
+Average Time: 0.000002
+Average Time: 0.000199
+Average Time: 0.000000
+Average Time: 0.000000
+Average Time: 0.000640
+Average Time: 0.000629
+Average Time: 0.108872
+Average Time: 0.108733
+Average Time: 0.108412
+Average Time: 0.068699
+Average Time: 0.000000
+Average Time: 0.000097
+Average Time: 0.000001
+Average Time: 0.000004
+Average Time: 0.000001
+Average Time: 0.000075
+Average Time: 0.000110
+Average Time: 0.000002
+Average Time: 0.000103
+Average Time: 0.000000
+Average Time: 0.000050
+Average Time: 0.000078
+Average Time: 0.000000
+------------- Test counters -----------
+Total time in test (us): 1268961
+Total communication: 0
+Total actual communication: 0
+timer count: 1
+Timer 0: 
+ -> switchto5
+ -> switchto5 -> lock
+ -> switchto5 -> DPU WRAM backup
+Interface detected 32 DPU(s)
+Interface detected 32 Ranks(s)
+ -> switchto5 -> DPU WRAM recovery
+ -> switchto5 -> unlock
+Current epoch: 0
+ -> search max match
+ -> search max match -> taskgen
+ -> search max match -> taskgen -> p1
+ -> search max match -> exec
+ -> search max match -> exec -> lock
+ -> search max match -> exec -> send
+ -> search max match -> exec -> send -> pre send
+ -> search max match -> exec -> send -> trigger
+ -> search max match -> exec -> dpu
+ -> search max match -> exec -> dpu -> wait
+ -> search max match -> exec -> receive
+ -> search max match -> exec -> receive -> pre_working
+ -> search max match -> exec -> receive -> trigger
+ -> search max match -> exec -> receive -> more fetching
+ -> search max match -> exec -> receive -> post receiving
+ -> search max match -> exec -> unlock
+ -> search max match -> get result
+------------ Search Results --------------
+ad354ec2264667b4 ffffffffffffffff
+Match Num: 50000; Unmatch Num: 1

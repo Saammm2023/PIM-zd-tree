@@ -1,0 +1,9 @@
+tag,nr_dpus,dist,zipf_s,clusters,width_log2,seed,points,gini_2048,gini_dpu_bins
+strong_quantile,8,zipf,1.5,1024,22,1,200000,0.9785,0.4446
+strong_equal,8,zipf,1.5,1024,22,1,200000,0.9785,0.4446
+strong_quantile,16,zipf,1.5,1024,22,1,200000,0.9785,0.5992
+strong_equal,16,zipf,1.5,1024,22,1,200000,0.9785,0.5992
+strong_quantile,32,zipf,1.5,1024,22,1,200000,0.9785,0.7207
+strong_equal,32,zipf,1.5,1024,22,1,200000,0.9785,0.7207
+strong_quantile,64,zipf,1.5,1024,22,1,200000,0.9785,0.7982
+strong_equal,64,zipf,1.5,1024,22,1,200000,0.9785,0.7982

@@ -7,7 +7,8 @@
 //   lookups (-s 1): --search-batch-size (-S) points sampled from the warm-up batches (the first S / I of
 //   each), plus one random point that is not in the data set
 //
-// Each batch appends a row to <prefix>_cpu.csv: tree,tag,threads,op,batch_idx,ops,seconds,found.
+// Each batch appends a row to <prefix>_cpu.csv: tree,tag,threads,rep,op,batch_idx,ops,seconds,found
+// (--rep numbers repeated runs of the same configuration).
 
 #include <atomic>
 #include <chrono>
@@ -39,6 +40,7 @@ struct Options {
     double zipf_s = 1.0;
     int clusters = 1024, cluster_width_log2 = 22, seed = 1;
     std::string csv, tag;
+    int rep = 0;
 };
 
 Options parse(int argc, char** argv) {
@@ -64,6 +66,7 @@ Options parse(int argc, char** argv) {
         else if (a == "--seed") o.seed = std::atoi(next());
         else if (a == "--stats-csv") o.csv = next();
         else if (a == "--stats-tag") o.tag = next();
+        else if (a == "--rep") o.rep = std::atoi(next());
         else { std::fprintf(stderr, "unknown option %s\n", a.c_str()); std::exit(1); }
     }
     return o;
@@ -104,14 +107,14 @@ void run(const Options& o, const char* tree_name) {
         std::string path = o.csv + "_cpu.csv";
         bool fresh = (std::fopen(path.c_str(), "r") == nullptr);
         csv = std::fopen(path.c_str(), "a");
-        if (csv != nullptr && fresh) std::fputs("tree,tag,threads,op,batch_idx,ops,seconds,found\n", csv);
+        if (csv != nullptr && fresh) std::fputs("tree,tag,threads,rep,op,batch_idx,ops,seconds,found\n", csv);
     }
     auto record = [&](const char* op, long idx, long ops, double sec, long found) {
         std::printf("%s %s batch %ld: %ld ops in %.6f s (%.2f Mop/s)%s\n", tree_name, op, idx, ops, sec,
                     ops / sec / 1e6, found >= 0 ? (" found " + std::to_string(found)).c_str() : "");
         if (csv != nullptr)
-            std::fprintf(csv, "%s,%s,%zu,%s,%ld,%ld,%.6f,%ld\n", tree_name, o.tag.c_str(),
-                         (size_t)parlay::num_workers(), op, idx, ops, sec, found);
+            std::fprintf(csv, "%s,%s,%zu,%d,%s,%ld,%ld,%.6f,%ld\n", tree_name, o.tag.c_str(),
+                         (size_t)parlay::num_workers(), o.rep, op, idx, ops, sec, found);
     };
     auto seconds_since = [](clock_type::time_point t0) {
         return std::chrono::duration<double>(clock_type::now() - t0).count();

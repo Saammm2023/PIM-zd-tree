@@ -122,6 +122,20 @@ Smoke test (1M warm-up points, 2 × 50k timed inserts, 50k lookups, 20 threads; 
 | Pkd-tree | uniform / moderate / strong | 15.5 / 15.7 / 16.0 | 14.6 / 14.8 / 13.8 |
 | zd-tree | uniform / moderate / strong | 6.5 / 7.1 / 6.8 | 7.7 / 8.6 / 7.4 |
 
+## Experiments and figures
+
+```bash
+source ~/upmem-sdk/env-sim.sh
+make -C cpu_baseline
+scripts/run_sweep.sh all          # cpu | scaling | batch | skewcmp; about 45 minutes in total
+../.venv/bin/python scripts/analyze.py
+```
+
+`analyze.py` needs matplotlib, NumPy and pandas. Without root, create the venv from the standalone Python:
+`~/upmem-sdk/python310/bin/python3 -m venv ../.venv && ../.venv/bin/pip install matplotlib numpy pandas`.
+Results land in `results/`: raw CSVs, logs, `tables/baseline_results.md`, and `figures/*.pdf|png`. The comparison
+with the paper is in `results/ANALYSIS.md`.
+
 ## Measurement (`--stats-csv`)
 
 ```bash

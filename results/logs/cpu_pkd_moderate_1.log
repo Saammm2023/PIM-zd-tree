@@ -1,0 +1,16 @@
+CPU baseline: tree=pkd threads=1 dist=zipf
+pkd-tree warmup_insert batch 0: 80000 ops in 0.014156 s (5.65 Mop/s)
+pkd-tree warmup_insert batch 1: 80000 ops in 0.009116 s (8.78 Mop/s)
+pkd-tree warmup_insert batch 2: 80000 ops in 0.010412 s (7.68 Mop/s)
+pkd-tree warmup_insert batch 3: 80000 ops in 0.010326 s (7.75 Mop/s)
+pkd-tree warmup_insert batch 4: 80000 ops in 0.011559 s (6.92 Mop/s)
+pkd-tree warmup_insert batch 5: 80000 ops in 0.011408 s (7.01 Mop/s)
+pkd-tree warmup_insert batch 6: 80000 ops in 0.011949 s (6.70 Mop/s)
+pkd-tree warmup_insert batch 7: 80000 ops in 0.012385 s (6.46 Mop/s)
+pkd-tree warmup_insert batch 8: 80000 ops in 0.013193 s (6.06 Mop/s)
+pkd-tree warmup_insert batch 9: 80000 ops in 0.013212 s (6.06 Mop/s)
+pkd-tree insert batch 0: 50000 ops in 0.009560 s (5.23 Mop/s)
+pkd-tree insert batch 1: 50000 ops in 0.009874 s (5.06 Mop/s)
+pkd-tree insert batch 2: 50000 ops in 0.010011 s (4.99 Mop/s)
+pkd-tree lookup batch 0: 50001 ops in 0.033983 s (1.47 Mop/s) found 50000
+Lookup: 50000 of 50001 queries found (50000 were sampled from the data)

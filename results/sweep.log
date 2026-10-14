@@ -1,0 +1,86 @@
+ok    cpu pkd uniform 1 threads
+ok    cpu pkd uniform 4 threads
+ok    cpu pkd uniform 20 threads
+ok    cpu zd uniform 1 threads
+ok    cpu zd uniform 4 threads
+ok    cpu zd uniform 20 threads
+ok    cpu pkd moderate 1 threads
+ok    cpu pkd moderate 4 threads
+ok    cpu pkd moderate 20 threads
+ok    cpu zd moderate 1 threads
+ok    cpu zd moderate 4 threads
+ok    cpu zd moderate 20 threads
+ok    cpu pkd strong 1 threads
+ok    cpu pkd strong 4 threads
+ok    cpu pkd strong 20 threads
+ok    cpu zd strong 1 threads
+ok    cpu zd strong 4 threads
+ok    cpu zd strong 20 threads
+ok    cpu batch pkd uniform 5000
+ok    cpu batch pkd uniform 10000
+ok    cpu batch pkd uniform 20000
+ok    cpu batch pkd uniform 50000
+ok    cpu batch pkd uniform 100000
+ok    cpu batch pkd uniform 200000
+ok    cpu batch zd uniform 5000
+ok    cpu batch zd uniform 10000
+ok    cpu batch zd uniform 20000
+ok    cpu batch zd uniform 50000
+ok    cpu batch zd uniform 100000
+ok    cpu batch zd uniform 200000
+ok    cpu batch pkd strong 5000
+ok    cpu batch pkd strong 10000
+ok    cpu batch pkd strong 20000
+ok    cpu batch pkd strong 50000
+ok    cpu batch pkd strong 100000
+ok    cpu batch pkd strong 200000
+ok    cpu batch zd strong 5000
+ok    cpu batch zd strong 10000
+ok    cpu batch zd strong 20000
+ok    cpu batch zd strong 50000
+ok    cpu batch zd strong 100000
+ok    cpu batch zd strong 200000
+ok    scaling_8_uniform_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_8_uniform_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_8_moderate_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_8_moderate_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_8_strong_quantile  Match Num: 50000; Unmatch Num: 1
+FAIL  scaling_8_strong_equal  DPU error: dpu is in fault
+ok    scaling_16_uniform_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_16_uniform_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_16_moderate_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_16_moderate_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_16_strong_quantile  Match Num: 50000; Unmatch Num: 1
+FAIL  scaling_16_strong_equal  DPU error: dpu is in fault
+ok    scaling_32_uniform_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_32_uniform_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_32_moderate_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_32_moderate_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_32_strong_quantile  Match Num: 50000; Unmatch Num: 1
+FAIL  scaling_32_strong_equal  DPU error: dpu is in fault
+ok    scaling_64_uniform_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_64_uniform_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_64_moderate_quantile  Match Num: 50000; Unmatch Num: 1
+ok    scaling_64_moderate_equal  Match Num: 50000; Unmatch Num: 1
+ok    scaling_64_strong_quantile  Match Num: 50000; Unmatch Num: 1
+FAIL  scaling_64_strong_equal  DPU error: dpu is in fault
+ok    batch_64_uniform_5000  Match Num: 5000; Unmatch Num: 1
+ok    batch_64_uniform_10000  Match Num: 10000; Unmatch Num: 1
+ok    batch_64_uniform_20000  Match Num: 20000; Unmatch Num: 1
+ok    batch_64_uniform_50000  Match Num: 50000; Unmatch Num: 1
+ok    batch_64_uniform_100000  Match Num: 100000; Unmatch Num: 1
+ok    batch_64_uniform_200000  Match Num: 200000; Unmatch Num: 1
+ok    batch_64_strong_5000  Match Num: 5000; Unmatch Num: 1
+ok    batch_64_strong_10000  Match Num: 10000; Unmatch Num: 1
+ok    batch_64_strong_20000  Match Num: 20000; Unmatch Num: 1
+ok    batch_64_strong_50000  Match Num: 50000; Unmatch Num: 1
+ok    batch_64_strong_100000  Match Num: 100000; Unmatch Num: 1
+ok    batch_64_strong_200000  Match Num: 200000; Unmatch Num: 1
+ok    skewcmp_8_strong_quantile  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_8_strong_equal  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_16_strong_quantile  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_16_strong_equal  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_32_strong_quantile  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_32_strong_equal  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_64_strong_quantile  Match Num: 20000; Unmatch Num: 1
+ok    skewcmp_64_strong_equal  Match Num: 20000; Unmatch Num: 1
