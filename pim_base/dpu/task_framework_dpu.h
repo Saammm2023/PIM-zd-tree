@@ -119,6 +119,15 @@ static void init_block_type(int tasklet_id, int type, int recvlen,
         recv_block_fixlen = recvlen;
 
         send_block_tasks = send_block + DPU_CPU_BLOCK_HEADER;
+        // Fixed-length replies fill MRAM up to its end (64 MB above 0x08000000); fail clearly instead of
+        // writing past it, which shows up on the host only as "dpu is in fault".
+        ALWAYS_IN_DPU_ASSERT(
+            type != FIXED_LENGTH ||
+                (uint64_t)(uint32_t)send_block_tasks +
+                        (uint64_t)recv_block_task_cnt * sendlen <=
+                    0x08000000ull + (64ull << 20),
+            "reply area overflow: %lld replies of %d B; lower the batch size per DPU\n",
+            recv_block_task_cnt, sendlen);
         int i = send_block_cnt++;
         send_block_offsets[i] = send_block - send_buffer;
     }

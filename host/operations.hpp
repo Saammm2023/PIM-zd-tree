@@ -153,67 +153,114 @@ public:
         cpu_coverage_timer->start();
         time_start("insert");
 
-        time_start("init");
         if(vec_input == nullptr) vec_input = this->vector_input;
-        IO_Manager *io;
-        IO_Task_Batch *single_search_batch, *single_insert_batch;
-        auto key_wrap_seq = parlay::tabulate(this->length, [&](int32_t i) {
-            return std::make_pair(coord_to_key(&(vec_input[i])), i);
-        });
-        parlay::integer_sort_inplace(key_wrap_seq, [&](std::pair<uint64_t, int32_t> kw) {return kw.first;});
-        uint64_t *key_seq = (uint64_t*)this->i64_io;
-        auto key_idx_seq = parlay::tabulate(this->length, [&](int32_t i) {
-            key_seq[i] = key_wrap_seq[i].first;
-            return key_wrap_seq[i].second;
-        });
-        time_end("init");
-
-        time_nested("search", [&]() {
-            time_nested("taskgen", [&]() {
-                parfor_wrap(0, this->length, [&](size_t i) {
-                    this->target_dpu[i] = key_to_dpu_id(key_seq[i]);
-                });
-                io = alloc_io_manager();
-                io->init();
-                single_search_batch = io->alloc<Single_search_task, Single_search_reply>(direct);
-                single_search_batch->push_task_sorted(
-                    this->length, nr_of_dpus,
-                    [&](size_t i) { return (Single_search_task){.key = key_seq[i]}; },
-                    [&](size_t i) { return this->target_dpu[i]; },
-                    parlay::make_slice(this->op_taskpos, this->op_taskpos + this->length)
-                );
-                io->finish_task_batch();
+        // One SINGLE_INSERT task carries every point bound for one leaf, and the DPU builds the new
+        // subtree in a fixed per-tasklet MRAM scratch area (MAX_INSERT_TASK_LEN points). A leaf that
+        // receives more points than that keeps a strided sample in this round; the other points are
+        // re-searched and inserted in a further round. The same happens to whole leaf groups beyond
+        // MAX_INSERT_TASKS_PER_DPU on one DPU (the IO framework holds at most
+        // MAX_TASK_COUNT_PER_DPU_PER_BLOCK tasks per DPU per block). Rounds are only added in those cases
+        // (e.g. the first batch into an empty tree, where all points of a DPU hit one or two root
+        // children, or a later batch with more than about 12.8k points per DPU).
+        const int64_t batch_length = this->length;
+        parlay::sequence<vectorT> round_input, deferred;
+        while(true) {
+            time_start("init");
+            IO_Manager *io;
+            IO_Task_Batch *single_search_batch, *single_insert_batch;
+            auto key_wrap_seq = parlay::tabulate(this->length, [&](int32_t i) {
+                return std::make_pair(coord_to_key(&(vec_input[i])), i);
             });
-            time_nested("exec", [&](){ASSERT(io->exec());});
-            time_nested("get result", [&]() {
-                parfor_wrap(0, this->length, [&](size_t i) {
-                    Single_search_reply *rep = (Single_search_reply*)single_search_batch->ith(this->target_dpu[i], this->op_taskpos[i]);
-                    this->op_addrs[i] = rep->addr;
-                });
-                io->reset();
+            parlay::integer_sort_inplace(key_wrap_seq, [&](std::pair<uint64_t, int32_t> kw) {return kw.first;});
+            uint64_t *key_seq = (uint64_t*)this->i64_io;
+            auto key_idx_seq = parlay::tabulate(this->length, [&](int32_t i) {
+                key_seq[i] = key_wrap_seq[i].first;
+                return key_wrap_seq[i].second;
             });
-        });
+            time_end("init");
 
-        time_nested("insert_vector", [&]() {
-            time_nested("taskgen", [&]() {
-                io = alloc_io_manager();
-                io->init();
-                single_insert_batch = io->alloc_task_batch(direct, variable_length, fixed_length, SINGLE_INSERT_TSK, -1, 0);
-
-                auto pptr_diff_seq = parlay::delayed_tabulate(this->length, [&](size_t i)->bool {
-                    return (i == 0) || !equal_pptr_strong(this->op_addrs[i], this->op_addrs[i - 1]);
+            time_nested("search", [&]() {
+                time_nested("taskgen", [&]() {
+                    parfor_wrap(0, this->length, [&](size_t i) {
+                        this->target_dpu[i] = key_to_dpu_id(key_seq[i]);
+                    });
+                    io = alloc_io_manager();
+                    io->init();
+                    single_search_batch = io->alloc<Single_search_task, Single_search_reply>(direct);
+                    single_search_batch->push_task_sorted(
+                        this->length, nr_of_dpus,
+                        [&](size_t i) { return (Single_search_task){.key = key_seq[i]}; },
+                        [&](size_t i) { return this->target_dpu[i]; },
+                        parlay::make_slice(this->op_taskpos, this->op_taskpos + this->length)
+                    );
+                    io->finish_task_batch();
                 });
-                int pptr_diff_num = parlay::count(pptr_diff_seq, true);
-                if(pptr_diff_num >= this->length / 5) {
-                    parfor_wrap(0, this->length, [&](int i) {
-                        if(pptr_diff_seq[i]) {
-                            int len = 1, j;
-                            for(j = i + 1; j < this->length; j++, len++) {
-                                if(!equal_pptr_strong(this->op_addrs[j], this->op_addrs[j - 1])) {
-                                    break;
-                                }
+                time_nested("exec", [&](){ASSERT(io->exec());});
+                time_nested("get result", [&]() {
+                    parfor_wrap(0, this->length, [&](size_t i) {
+                        Single_search_reply *rep = (Single_search_reply*)single_search_batch->ith(this->target_dpu[i], this->op_taskpos[i]);
+                        this->op_addrs[i] = rep->addr;
+                    });
+                    io->reset();
+                });
+            });
+
+            time_nested("insert_vector", [&]() {
+                time_nested("taskgen", [&]() {
+                    io = alloc_io_manager();
+                    io->init();
+                    single_insert_batch = io->alloc_task_batch(direct, variable_length, fixed_length, SINGLE_INSERT_TSK, -1, 0);
+
+                    auto pptr_diff_seq = parlay::delayed_tabulate(this->length, [&](size_t i)->bool {
+                        return (i == 0) || !equal_pptr_strong(this->op_addrs[i], this->op_addrs[i - 1]);
+                    });
+                    int pptr_diff_num = parlay::count(pptr_diff_seq, true);
+                    auto pptr_diff_idx = parlay::pack_index<uint32_t>(pptr_diff_seq);
+                    auto group_len = [&](int i)->int {
+                        return ((i == pptr_diff_num - 1) ? this->length : pptr_diff_idx[i + 1]) - pptr_diff_idx[i];
+                    };
+                    int max_group_len = parlay::reduce(parlay::delayed_tabulate(pptr_diff_num, [&](size_t i) { return group_len(i); }), parlay::maxm<int>());
+                    // Rank of each leaf group among the groups bound for the same DPU
+                    parlay::sequence<int> group_rank_in_dpu(pptr_diff_num);
+                    int max_groups_per_dpu = 0;
+                    {
+                        std::vector<int> groups_per_dpu(nr_of_dpus, 0);
+                        for(int i = 0; i < pptr_diff_num; i++) {
+                            group_rank_in_dpu[i] = groups_per_dpu[this->op_addrs[pptr_diff_idx[i]].id]++;
+                        }
+                        for(int c : groups_per_dpu) max_groups_per_dpu = std::max(max_groups_per_dpu, c);
+                    }
+                    if(max_group_len > MAX_INSERT_TASK_LEN || max_groups_per_dpu > MAX_INSERT_TASKS_PER_DPU) {
+                        // Keep every stride-th point of an oversized group and only the first
+                        // MAX_INSERT_TASKS_PER_DPU groups of each DPU; defer the rest
+                        parlay::sequence<bool> keep(this->length, true);
+                        parfor_wrap(0, pptr_diff_num, [&](size_t i) {
+                            int len = group_len(i);
+                            if(group_rank_in_dpu[i] >= MAX_INSERT_TASKS_PER_DPU) {
+                                for(int j = 0, k = pptr_diff_idx[i]; j < len; j++, k++) keep[k] = false;
                             }
-                            pptr addr = this->op_addrs[i];
+                            else if(len > MAX_INSERT_TASK_LEN) {
+                                int stride = (len + MAX_INSERT_TASK_LEN - 1) / MAX_INSERT_TASK_LEN;
+                                for(int j = 0, k = pptr_diff_idx[i]; j < len; j++, k++) keep[k] = (j % stride == 0);
+                            }
+                        });
+                        auto kept_idx = parlay::pack_index<uint32_t>(keep);
+                        auto deferred_idx = parlay::pack_index<uint32_t>(parlay::delayed_map(keep, [](bool b) { return !b; }));
+                        deferred = parlay::tabulate(deferred_idx.size(), [&](size_t i) {
+                            return vec_input[key_idx_seq[deferred_idx[i]]];
+                        });
+                        int kept_num = kept_idx.size();
+                        auto kept_diff_idx = parlay::pack_index<uint32_t>(parlay::delayed_tabulate(kept_num, [&](size_t i)->bool {
+                            return (i == 0) || !equal_pptr_strong(this->op_addrs[kept_idx[i]], this->op_addrs[kept_idx[i - 1]]);
+                        }));
+                        int kept_diff_num = kept_diff_idx.size();
+                        parfor_wrap(0, kept_diff_num, [&](int i) {
+                            int len = (
+                                (i == kept_diff_num - 1) ?
+                                (kept_num - kept_diff_idx[i]) :
+                                (kept_diff_idx[i + 1] - kept_diff_idx[i])
+                            );
+                            pptr addr = this->op_addrs[kept_idx[kept_diff_idx[i]]];
                             Single_insert_task *tsk = (Single_insert_task*)(single_insert_batch->push_task_zero_copy(
                                 addr.id,
                                 SINGLE_INSERT_TSK_SIZE(len),
@@ -221,42 +268,71 @@ public:
                             ));
                             tsk->addr = addr;
                             tsk->len = len;
-                            for(j = 0; j < len; j++, i++) {
-                                tsk->v[j] = vec_input[key_idx_seq[i]];
+                            for(int j = 0, k = kept_diff_idx[i]; j < len; j++, k++) {
+                                tsk->v[j] = vec_input[key_idx_seq[kept_idx[k]]];
                             }
-                        }
-                    });
-                }
-                else {
-                    auto pptr_diff_idx = parlay::pack_index<uint32_t>(pptr_diff_seq);
-                    parfor_wrap(0, pptr_diff_num, [&](int i) {
-                        int len = (
-                            (i == pptr_diff_num - 1) ?
-                            (this->length - pptr_diff_idx[i]) :
-                            (pptr_diff_idx[i + 1] - pptr_diff_idx[i])
-                        );
-                        pptr addr = this->op_addrs[pptr_diff_idx[i]];
-                        Single_insert_task *tsk = (Single_insert_task*)(single_insert_batch->push_task_zero_copy(
-                            addr.id,
-                            SINGLE_INSERT_TSK_SIZE(len),
-                            true
-                        ));
-                        tsk->addr = addr;
-                        tsk->len = len;
-                        for(int j = 0, k = pptr_diff_idx[i]; j < len; j++, k++) {
-                            tsk->v[j] = vec_input[key_idx_seq[k]];
-                        }
-                    });
-                }
+                        });
+                    }
+                    else if(pptr_diff_num >= this->length / 5) {
+                        parfor_wrap(0, this->length, [&](int i) {
+                            if(pptr_diff_seq[i]) {
+                                int len = 1, j;
+                                for(j = i + 1; j < this->length; j++, len++) {
+                                    if(!equal_pptr_strong(this->op_addrs[j], this->op_addrs[j - 1])) {
+                                        break;
+                                    }
+                                }
+                                pptr addr = this->op_addrs[i];
+                                Single_insert_task *tsk = (Single_insert_task*)(single_insert_batch->push_task_zero_copy(
+                                    addr.id,
+                                    SINGLE_INSERT_TSK_SIZE(len),
+                                    true
+                                ));
+                                tsk->addr = addr;
+                                tsk->len = len;
+                                for(j = 0; j < len; j++, i++) {
+                                    tsk->v[j] = vec_input[key_idx_seq[i]];
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        parfor_wrap(0, pptr_diff_num, [&](int i) {
+                            int len = (
+                                (i == pptr_diff_num - 1) ?
+                                (this->length - pptr_diff_idx[i]) :
+                                (pptr_diff_idx[i + 1] - pptr_diff_idx[i])
+                            );
+                            pptr addr = this->op_addrs[pptr_diff_idx[i]];
+                            Single_insert_task *tsk = (Single_insert_task*)(single_insert_batch->push_task_zero_copy(
+                                addr.id,
+                                SINGLE_INSERT_TSK_SIZE(len),
+                                true
+                            ));
+                            tsk->addr = addr;
+                            tsk->len = len;
+                            for(int j = 0, k = pptr_diff_idx[i]; j < len; j++, k++) {
+                                tsk->v[j] = vec_input[key_idx_seq[k]];
+                            }
+                        });
+                    }
 
-                io->finish_task_batch();
+                    io->finish_task_batch();
+                });
+                time_nested("exec", [&](){ASSERT(io->exec());});
+                time_nested("get result", [&]() {io->reset();});
             });
-            time_nested("exec", [&](){ASSERT(io->exec());});
-            time_nested("get result", [&]() {io->reset();});
-        });
 
-        // nr_points += this->length;
-        std::atomic_fetch_add(&(this->nr_points), this->length);
+            // nr_points += this->length;
+            std::atomic_fetch_add(&(this->nr_points), this->length - (int64_t)deferred.size());
+
+            if(deferred.empty()) break;
+            round_input = std::move(deferred);
+            deferred = parlay::sequence<vectorT>();
+            vec_input = round_input.data();
+            this->length = round_input.size();
+        }
+        this->length = batch_length;
 
         time_end("insert");
         cpu_coverage_timer->end();

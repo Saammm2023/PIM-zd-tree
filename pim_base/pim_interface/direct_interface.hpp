@@ -571,6 +571,13 @@ class DirectPIMInterface : public PIMInterface {
 
     void byte_interleave_avx512(uint64_t *input, uint64_t *output, bool use_stream)
     {
+#ifndef __AVX512F__
+        // The direct interface talks to real UPMEM ranks and needs AVX-512. On CPUs without it
+        // (and on the simulator) use --interface upmem instead.
+        (void)input; (void)output; (void)use_stream;
+        std::fprintf(stderr, "direct interface requires AVX-512; run with --interface upmem\n");
+        std::abort();
+#else
         __m512i load = _mm512_loadu_si512(input);
 
         // LEVEL 0
@@ -602,6 +609,7 @@ class DirectPIMInterface : public PIMInterface {
         }
 
         _mm512_storeu_si512((__m512i *)output, final);
+#endif
     }
 
    protected:

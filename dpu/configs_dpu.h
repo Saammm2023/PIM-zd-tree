@@ -9,7 +9,7 @@
 #define B_BUFFER_SIZE (12 << 20) // 12 MB
 #define P_BUFFER_SIZE (36 << 20) // 36 MB
 
-#define MRAM_BUFFER_SIZE (3 << 19) // 1.5 MB
+// MRAM_BUFFER_SIZE (per-tasklet scratch) is in common/configs.h; the host needs it for MAX_INSERT_TASK_LEN.
 
 /* DPU Locks */
 

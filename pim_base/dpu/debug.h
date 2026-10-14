@@ -4,6 +4,17 @@
 #include "debug_settings.h"
 #include "task_framework_common.h"
 
+// Always-on capacity check: prints the reason to the DPU log and faults the DPU. The host prints the
+// DPU logs when a launch fails (see exec() in task_framework_host.hpp).
+#define ALWAYS_IN_DPU_ASSERT(x, ...)          \
+    {                                         \
+        if (!(x)) {                           \
+            printf("tasklet-%d: ", me());     \
+            printf(__VA_ARGS__);              \
+            abort();                          \
+        }                                     \
+    }
+
 #ifdef ZHAOYW_DEBUG_TASK
 #define TASK_IN_DPU_ASSERT(x, y) IN_DPU_ASSERT(x, y)
 #define TASK_IN_DPU_ASSERT_EXEC(x, y) IN_DPU_ASSERT_EXEC(x, y)

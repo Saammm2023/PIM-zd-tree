@@ -191,8 +191,10 @@ static void p_insert(mPptr addr, int idx, int num, mpvector vec, mpvoid buf, int
         mpvector vec_buf = (mpvector)buf;
         mpuint64_t key_buf = (mpuint64_t)(buf + buf_size * 3 * NR_DIMENSION / 4 / (NR_DIMENSION + 1));
         __mram_ptr struct int64_pair *stack_buf = (__mram_ptr struct int64_pair*)(buf + buf_size * 3 / 4);
-        __mram_ptr struct int64_pair *stack_buf_end = stack_buf + buf_size / sizeof(struct int64_pair);
+        // The pair queue owns the last quarter of buf; it used to run on into the next tasklet's scratch
+        __mram_ptr struct int64_pair *stack_buf_end = stack_buf + (buf_size / 4) / sizeof(struct int64_pair);
         int total_num = addr_num + num;
+        IN_DPU_ASSERT(total_num <= INSERT_SCRATCH_CAPACITY, "p_insert: task exceeds MRAM scratch\n");
         int i, j, k;
         bool use_wram_key_buf = total_num <= INSERT_WRAM_KEY_BUF_SIZE;
 

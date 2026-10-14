@@ -6,7 +6,12 @@ NR_DPUS ?= 2560
 STACK_SIZE ?= 2048
 CC = g++
 
-PAPI_INSTALL_DIR := [path_to_your_PAPI]/src/install
+# PAPI is optional; build with USE_PAPI=1 PAPI_INSTALL_DIR=<path> to enable it.
+USE_PAPI ?= 0
+PAPI_INSTALL_DIR ?= [path_to_your_PAPI]/src/install
+ifeq (${USE_PAPI},1)
+PAPI_FLAGS := -I${PAPI_INSTALL_DIR}/include -L${PAPI_INSTALL_DIR}/lib ${PAPI_INSTALL_DIR}/lib/libpapi.a -DUSE_PAPI=1
+endif
 
 define conf_filename
 	${BUILDDIR}/.NR_DPUS_$(1)_NR_TASKLETS_$(2).conf
@@ -63,10 +68,8 @@ INCLUDE_UPMEM_SRC_LIBS := ${INCLUDE_UPMEM_SRC_DIR} \
 __dirs := $(shell mkdir -p ${BUILDDIR})
 
 COMMON_FLAGS := -Wall -Wextra -g -I${COMMON_INCLUDES} -I${COMMON_PIM_BASE_PTH}
-HOST_LIB_FLAGS := -isystem ${PARLAY_LIB_PTH} -isystem ${ARGPARSE_LIB_PTH} -I${HOST_PIM_BASE_PTH} -I${HOST_PIM_INTERFACE_PTH} ${INCLUDE_UPMEM_SRC_LIBS} -lstdc++fs \
- 	-I${PAPI_INSTALL_DIR}/include -L${PAPI_INSTALL_DIR}/lib ${PAPI_INSTALL_DIR}/lib/libpapi.a
-HOST_FLAGS := ${COMMON_FLAGS} -std=c++17 -lpthread -O3 -I${HOST_DIR} ${HOST_LIB_FLAGS} `dpu-pkg-config --cflags --libs dpu` -march=native -DNR_TASKLETS=${NR_TASKLETS} -DNR_DPUS=${NR_DPUS} \
-	-DUSE_PAPI=1
+HOST_LIB_FLAGS := -isystem ${PARLAY_LIB_PTH} -isystem ${ARGPARSE_LIB_PTH} -I${HOST_PIM_BASE_PTH} -I${HOST_PIM_INTERFACE_PTH} ${INCLUDE_UPMEM_SRC_LIBS} -lstdc++fs ${PAPI_FLAGS}
+HOST_FLAGS := ${COMMON_FLAGS} -std=c++17 -lpthread -O3 -I${HOST_DIR} ${HOST_LIB_FLAGS} `dpu-pkg-config --cflags --libs dpu` -march=native -DNR_TASKLETS=${NR_TASKLETS} -DNR_DPUS=${NR_DPUS} -DDPU_BINARY_DIR=\"${BUILDDIR}\"
 DPU_LIB_FLAGS := -I${DPU_PIM_BASE_PTH}
 DPU_FLAGS := ${COMMON_FLAGS} -I${DPU_DIR} ${DPU_LIB_FLAGS} -DSTACK_SIZE_DEFAULT=${STACK_SIZE} -DNR_TASKLETS=${NR_TASKLETS} -Oz
 

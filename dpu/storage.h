@@ -81,6 +81,9 @@ static inline mBptr alloc_new_bnode() {
     addr = &(b_buffer[bcnt]);
     bcnt++;
     mutex_unlock(b_lock);
+    ALWAYS_IN_DPU_ASSERT(addr < b_buffer_tmp + B_BUFFER_SIZE / sizeof(Bnode),
+                         "internal-node storage full (%d nodes); store fewer points per DPU\n",
+                         (int)(B_BUFFER_SIZE / sizeof(Bnode)));
     addr->subtree_size = 0;
     return addr;
 }
@@ -93,6 +96,9 @@ static inline mPptr alloc_new_pnode() {
     addr = &(p_buffer[pcnt]);
     pcnt++;
     mutex_unlock(p_lock);
+    ALWAYS_IN_DPU_ASSERT(addr < p_buffer_tmp + P_BUFFER_SIZE / sizeof(Pnode),
+                         "leaf storage full (%d leaves); store fewer points per DPU\n",
+                         (int)(P_BUFFER_SIZE / sizeof(Pnode)));
     addr->num = 0;
     return addr;
 }

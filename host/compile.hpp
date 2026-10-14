@@ -9,11 +9,16 @@
 
 #define NULL_pt(type) ((type)-1)
 
-const string dpu_insert_binary = "build/zd_tree_dpu_insert";
-const string dpu_box_fetch_binary = "build/zd_tree_dpu_box_fetch";
-const string dpu_box_count_binary = "build/zd_tree_dpu_box_count";
-const string dpu_knn_binary = "build/zd_tree_dpu_knn";
-const string dpu_misc_binary = "build/zd_tree_dpu_misc";
+// Directory holding the DPU binaries; the Makefile sets it to BUILDDIR.
+#ifndef DPU_BINARY_DIR
+#define DPU_BINARY_DIR "build"
+#endif
+
+const string dpu_insert_binary = DPU_BINARY_DIR "/zd_tree_dpu_insert";
+const string dpu_box_fetch_binary = DPU_BINARY_DIR "/zd_tree_dpu_box_fetch";
+const string dpu_box_count_binary = DPU_BINARY_DIR "/zd_tree_dpu_box_count";
+const string dpu_knn_binary = DPU_BINARY_DIR "/zd_tree_dpu_knn";
+const string dpu_misc_binary = DPU_BINARY_DIR "/zd_tree_dpu_misc";
 
 int32_t wram_save_pos[NR_DPUS];
 

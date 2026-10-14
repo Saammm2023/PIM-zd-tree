@@ -104,9 +104,10 @@ class IO_Task_Block {
             length = task_length;
         }
         count_size send_cs = inc_cs(&cs, 1, length, atomic);
-        ASSERT(send_cs.cnt < MAX_TASK_COUNT_PER_DPU_PER_BLOCK);
-        ASSERT_EXEC(send_cs.size < MAX_TASK_BUFFER_SIZE_PER_DPU,
-                    { printf("target=%d siz=%d\n", target, send_cs.size); });
+        CHECK_BOUND(send_cs.cnt < MAX_TASK_COUNT_PER_DPU_PER_BLOCK,
+                    "DPU %d: %d tasks in one block (max %d)", target, send_cs.cnt, MAX_TASK_COUNT_PER_DPU_PER_BLOCK);
+        CHECK_BOUND(send_cs.size < MAX_TASK_BUFFER_SIZE_PER_DPU,
+                    "DPU %d: %d task bytes (max %d)", target, send_cs.size, MAX_TASK_BUFFER_SIZE_PER_DPU);
         if (cnt != NULL) {
             *cnt = send_cs.cnt;
         }
@@ -121,9 +122,10 @@ class IO_Task_Block {
         ASSERT(content_type == fixed_length);
         length = task_length;
         count_size send_cs = inc_cs(&cs, count, count * length, atomic);
-        ASSERT(send_cs.cnt < MAX_TASK_COUNT_PER_DPU_PER_BLOCK);
-        ASSERT_EXEC(send_cs.size < MAX_TASK_BUFFER_SIZE_PER_DPU,
-                    { printf("target=%d siz=%d\n", target, send_cs.size); });
+        CHECK_BOUND(send_cs.cnt < MAX_TASK_COUNT_PER_DPU_PER_BLOCK,
+                    "DPU %d: %d tasks in one block (max %d)", target, send_cs.cnt, MAX_TASK_COUNT_PER_DPU_PER_BLOCK);
+        CHECK_BOUND(send_cs.size < MAX_TASK_BUFFER_SIZE_PER_DPU,
+                    "DPU %d: %d task bytes (max %d)", target, send_cs.size, MAX_TASK_BUFFER_SIZE_PER_DPU);
         if (cnt != NULL) {
             *cnt = send_cs.cnt;
         }
@@ -542,7 +544,9 @@ class IO_Manager {
             tbs[i].finish(direct_buffer_heads);
             for (int j = 0; j < nr_of_dpus; j++) {
                 direct_batch_offsets[j][direct_cnt] = direct_buffer_heads[j] - direct_buffer[j];
-                ASSERT((direct_buffer_heads[j] - direct_buffer[j]) < MAX_TASK_BUFFER_SIZE_PER_DPU);
+                CHECK_BOUND((direct_buffer_heads[j] - direct_buffer[j]) < MAX_TASK_BUFFER_SIZE_PER_DPU,
+                            "DPU %d: %ld bytes queued (max %d)", j, (long)(direct_buffer_heads[j] - direct_buffer[j]),
+                            MAX_TASK_BUFFER_SIZE_PER_DPU);
             }
         }
         io_manager_state = loading_finished;
@@ -647,7 +651,8 @@ class IO_Manager {
                 start[0] = epoch_number;
                 start[1] = cnt;
                 start[2] = task_size;
-                ASSERT(task_size <= MAX_TASK_BUFFER_SIZE_PER_DPU);
+                CHECK_BOUND(task_size <= MAX_TASK_BUFFER_SIZE_PER_DPU, "DPU %d: %d bytes to send (max %d)", i,
+                            task_size, MAX_TASK_BUFFER_SIZE_PER_DPU);
                 if (broadcast_cnt > 0) {
                     memcpy(direct_buffer_heads[i], broadcast_batch_offsets[0],
                            sizeof(int64_t) * broadcast_cnt);
@@ -1040,7 +1045,15 @@ class IO_Manager {
                 while (!dpu_control::ready()) {
                     std::this_thread::sleep_for(std::chrono::microseconds(100));
                 }
-                time_nested("wait", [&]() { DPU_ASSERT(dpu_sync(dpu_set)); });
+                time_nested("wait", [&]() {
+                    dpu_error_t err = dpu_sync(dpu_set);
+                    if (err != DPU_OK) {
+                        // Capacity checks on the DPU print their reason to the DPU log before faulting
+                        std::fprintf(stderr, "DPU error: %s; DPU logs follow\n", dpu_error_to_string(err));
+                        dpu_control::print_all_log();
+                        std::exit(1);
+                    }
+                });
             });
             pim_coverage_timer->end();
             cpu_coverage_timer->start();

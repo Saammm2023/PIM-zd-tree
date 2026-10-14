@@ -39,7 +39,8 @@ void host_init(std::string interface_type = "upmem") {
     rn_gen::init();
     init_wram_save_pos();
     init_io_managers();
-    dpu_control::alloc(DPU_ALLOCATE_ALL);
+    // Simulator: DPU_ALLOCATE_ALL yields a single 64-DPU rank, so request NR_DPUS explicitly.
+    dpu_control::alloc(NR_DPUS);
     namespace_pim_interface::pim_interface_init(dpu_set, interface_type);
     namespace_pim_interface::do_not_free_dpu_set_when_delete();
     IO_Manager::using_upmem_interface = (interface_type != "direct");

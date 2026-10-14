@@ -80,7 +80,7 @@ void host_parse_arguments(int argc, char *argv[]) {
     // Interface and runtime options
     parser.add_argument("--interface")
         .help("Backend interface")
-        .default_value(std::string("direct"));
+        .default_value(std::string("upmem"));
     parser.add_argument("--debug")
         .help("Enable debug output")
         .default_value(false)
@@ -139,7 +139,10 @@ int main(int argc, char *argv[]) {
     if(need_to_search) {
         if(search_type == 2 || search_type == 3 || search_type == 1) {
             vecs = new vectorT[search_batch_size + 1];
-            parfor_wrap(sampled_search_num, search_per_batch + 1, [&](size_t i) {
+            // Queries past sampled_search_num (at least the extra (search_batch_size + 1)-th) are random
+            // points, not taken from the dataset. The upper bound was search_per_batch + 1, which left them
+            // uninitialised whenever insert_round > 1.
+            parfor_wrap(sampled_search_num, search_batch_size + 1, [&](size_t i) {
 #if NR_DIMENSION == 2
                 vecs[i].x = abs(rn_gen::parallel_rand()) & COORD_MAX;
                 vecs[i].y = abs(rn_gen::parallel_rand()) & COORD_MAX;
