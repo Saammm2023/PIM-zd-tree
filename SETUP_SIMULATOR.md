@@ -268,7 +268,7 @@ Verified (uniform data; every dataset query matches):
 
 - **Stored points per DPU: at most about 130k** (uniform). 1.1M on 8 DPUs (137k per DPU) works; 1.2M (150k per DPU)
   fills leaf storage. Leaves average only about 3–4 points, so skewed data may fill storage sooner. The paper uses
-  about 117k points per DPU (300M on 2560 DPUs).
+  about 146k points per DPU (300M on 2048 DPUs; 2560 is only the public Makefile's default).
 - **Lookups per DPU per batch: at most about 120k.** 968k on 8 DPUs works. 1.6M (200k per DPU) faults inside the
   lookup kernel on DPU 0 without a message (cause not found). 2.08M is stopped by the host check: lookups queue
   about 37 B per query, which exceeds the 5.75 MB task area.

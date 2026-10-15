@@ -7,7 +7,7 @@ Generated data: `results/raw/` (CSV), `results/tables/` (summaries, `baseline_re
 
 | | Paper (PPoPP'26) | This reproduction |
 |---|---|---|
-| PIM system | UPMEM, 2560 DPUs at 350 MHz, real hardware | UPMEM SDK 2025.1.0 functional simulator, 8–64 DPUs (one rank) |
+| PIM system | UPMEM, 2048 DPUs (32 ranks) at 350 MHz, real hardware | UPMEM SDK 2025.1.0 functional simulator, 8–64 DPUs (one rank) |
 | PIM time | measured | DPU cycle counters from the simulator / 350 MHz, summed per launch over the slowest DPU |
 | CPU–PIM transfers | measured (direct interface) | bytes counted exactly, time from PrIM's measured bandwidth (0.33–6.68 GB/s CPU→DPU, 0.12–4.74 GB/s DPU→CPU for 1–64 DPUs); no launch overhead |
 | Host CPU | 2 × Xeon Silver 4216 (32 threads) | i5-13500 (20 threads), host work measured in wall time |
@@ -16,15 +16,15 @@ Generated data: `results/raw/` (CSV), `results/tables/` (summaries, `baseline_re
 | Operations | insert, box count/fetch, kNN | insert and point lookup only (assignment scope) |
 | PIM-zd-tree variant | throughput-optimized (and skew-resistant in Fig. 9) | public throughput-optimized code: L0 key-range split on the CPU, whole subtrees on DPUs; no push-pull, no L1 caching; L0 borders fixed from warm-up quantiles |
 
-Points per DPU at 8 DPUs (≈119k) match the paper's density (≈117k = 300M / 2560).
+Points per DPU at 8 DPUs (≈119k) are comparable to the paper's density (≈146k = 300M / 2048).
 
 ## Trends
 
 **1. Throughput grows with the number of PIM cores (Fig. `fig_scaling_throughput`).** From 8 to 64 DPUs,
 PIM-zd-tree's modelled throughput rises 4.0–4.5× for inserts and 5.0–5.5× for lookups (ideal 8×). Lookups pass
 the 20-thread Pkd-tree at 32–64 DPUs (22.3 vs 15.0 Mop/s, uniform, 64 DPUs). Inserts do not: 7.5 vs 18.3 Mop/s.
-The paper reports PIM-zd-tree 1.82× faster than the Pkd-tree on inserts at 2560 DPUs. Our trend points the same way,
-but 64 DPUs give 2.5% of the paper's PIM cores and memory bandwidth, so the crossover is not reached here.
+The paper reports PIM-zd-tree 1.82× faster than the Pkd-tree on inserts at 2048 DPUs. Our trend points the same way,
+but 64 DPUs give 3.1% of the paper's PIM cores and memory bandwidth, so the crossover is not reached here.
 
 **2. Range partitioning fails under skew, PIM-zd-tree does not (Fig. `fig_load_balance`, paper Sec. 3).** With the
 public code's equal-width key ranges, strong skew (Gini 0.98) puts most of the data on one DPU: the 800k-point
@@ -57,7 +57,7 @@ traffic measured with hardware counters, which we do not model.
 
 ## Where we differ from the paper, and why
 
-- **Absolute throughput and the insert crossover.** We use 2.5% of the paper's PIM cores against a newer desktop CPU,
+- **Absolute throughput and the insert crossover.** We use 3.1% of the paper's PIM cores against a newer desktop CPU,
   so the CPU baselines look relatively strong. Our PIM numbers come from a cost model. It has no kernel-launch
   overhead, so small batches may look better than on real hardware.
 - **Simulator timing.** DPU cycles come from the UPMEM functional simulator's pipeline model, not the hardware.

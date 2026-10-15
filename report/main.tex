@@ -50,7 +50,7 @@
 \begin{abstract}
 PIM-zd-tree (PPoPP'26) is a spatial index for processing-in-memory (PIM) systems that splits a zd-tree into layers
 with different placement and caching rules, and reports up to $4.25\times$ higher throughput than shared-memory
-indexes on a 2560-core UPMEM server. We reproduce its core claims at reduced scale: the authors' public code runs on
+indexes on a 2048-core UPMEM server. We reproduce its core claims at reduced scale: the authors' public code runs on
 the UPMEM SDK functional simulator with 8--64 simulated PIM cores (DPUs), and performance comes from DPU cycle counts,
 counted transfer bytes, transfer bandwidths measured by PrIM, and measured host time. Before the code ran correctly at this scale we had to fix
 memory-layout overflows and a host-side bug that lost points under skewed data.
@@ -83,7 +83,7 @@ PIM-zd-tree~\cite{pimzdtree} adapts the zd-tree~\cite{zdtree} to this setting. T
 into three layers: a globally shared top layer (L0) kept on the CPU, partially shared L1 nodes placed on random PIM
 modules with cached ancestors and descendants, and exclusive L2 nodes. Two thresholds, $\theta_{L0}$ and
 $\theta_{L1}$, trade skew tolerance against communication. The paper evaluates a \emph{throughput-optimized}
-configuration ($\theta_{L0}=n/P$, $\theta_{L1}=1$) on a 2560-DPU server, and a \emph{skew-resistant} one in its
+configuration ($\theta_{L0}=n/P$, $\theta_{L1}=1$) on a 2048-DPU server, and a \emph{skew-resistant} one in its
 skew study (Fig.~9).
 
 The assignment asks us to (i)~reproduce the core idea at reduced scale with the authors' public code on a simulator,
@@ -151,7 +151,7 @@ differences from the paper.
 \toprule
 Aspect & Paper & This work \\
 \midrule
-PIM hardware & UPMEM, 2560 DPUs & UPMEM SDK 2025.1.0 functional simulator, 8--64 DPUs (one rank) \\
+PIM hardware & UPMEM, 2048 DPUs & UPMEM SDK 2025.1.0 functional simulator, 8--64 DPUs (one rank) \\
 PIM time & measured & simulator cycle counters / 350\,MHz \\
 Transfers & measured, direct interface & bytes counted exactly, time from PrIM bandwidths~\cite{prim} \\
 Host CPU & 2$\times$Xeon 4216 & i5-13500, 20 threads (measured) \\
@@ -241,7 +241,7 @@ designs can hold). Right: per-DPU lookup work at 16 DPUs under strong skew.}
 \section{Running the public code at small scale}
 \label{sec:port}
 
-The public code targets 2560 DPUs, where each DPU receives a small slice of every batch. At 8--64 DPUs a DPU gets
+The public code targets 2560 DPUs (its build default; the paper's server has 2048), where each DPU receives a small slice of every batch. At 8--64 DPUs a DPU gets
 40--300$\times$ more, and several fixed-size limits were exceeded silently, because the code's assertions are compiled
 out in normal builds.
 
@@ -279,8 +279,8 @@ statement that the CPU deduplicates conflicting inserts (Alg.~2).
 \textbf{Scaling with PIM cores} (Fig.~\ref{fig:scaling}). From 8 to 64 DPUs, PIM-zd-tree's throughput rises
 4.0--4.5$\times$ for inserts and 5.0--5.5$\times$ for lookups (ideal: $8\times$). Lookups overtake the 20-thread
 Pkd-tree at 32--64 DPUs (22.3 vs.\ 15.0\,Mop/s, uniform); inserts reach 7.5\,Mop/s against the Pkd-tree's 18.3. The
-paper reports PIM-zd-tree $1.82\times$ faster than the Pkd-tree on inserts at 2560 DPUs. We reproduce the direction
-but not the crossover: 64 DPUs are 2.5\% of the paper's PIM cores and bandwidth, and our CPU is a recent desktop part.
+paper reports PIM-zd-tree $1.82\times$ faster than the Pkd-tree on inserts at 2048 DPUs. We reproduce the direction
+but not the crossover: 64 DPUs are 3.1\% of the paper's PIM cores and bandwidth, and our CPU is a recent desktop part.
 
 \textbf{Load balance under skew} (Fig.~\ref{fig:balance}). This is the paper's central argument for its layout, and
 it reproduces clearly. Range partitioning puts the dense clusters on a few DPUs: with moderate skew its lookup
@@ -485,7 +485,7 @@ distinct keys needs re-partitioning, which a host-only addition cannot do.
 \textbf{Model, not hardware.} PIM time comes from the functional simulator's cycle counts, and transfer time from
 published bandwidths with no launch overhead, so small batches may look better than on real hardware. Comparisons
 between designs on the same simulator are more reliable than absolute numbers.
-\textbf{Scale.} 64 DPUs are 2.5\% of the paper's machine. The insert crossover with CPU indexes is not reached, and
+\textbf{Scale.} 64 DPUs are 3.1\% of the paper's machine. The insert crossover with CPU indexes is not reached, and
 the host share of time is higher than on the paper's server.
 \textbf{Public code.} It lacks push-pull search, L1 caching and the skew-resistant configuration, and our L0 borders
 are fixed from the warm-up data rather than adapted as data arrives.
