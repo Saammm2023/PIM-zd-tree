@@ -3,7 +3,8 @@
 
     python scripts/analyze_varden.py
 
-Same cost model as scripts/analyze.py. Multi-batch lookup runs report batch size / median batch time.
+Same cost model as scripts/analyze.py. Multi-batch lookup runs (10 batches) report lookups / time over batches 3-10,
+leaving out two warm-up batches but counting the adaptive variant's probe batches.
 """
 import sys
 from pathlib import Path
@@ -34,15 +35,14 @@ def cpu_median(path, keys):
 
 
 def per_run(b, keys):
-    """Throughput per run: sum over batches for inserts (3 timed batches), median batch for multi-batch lookups."""
+    """Throughput per run: all timed batches for inserts; batches 3-10 for multi-batch lookups (two warm-up)."""
     rows = []
     for k, g in b[b.op.isin(["insert", "lookup"])].groupby(keys + ["op"]):
-        if g.op.iloc[0] == "lookup" and len(g) > 1:
-            t, ops = g.t_total.median(), g.ops.median()
-        else:
-            t, ops = g.t_total.sum(), g.ops.sum()
-        rows.append(dict(zip(keys + ["op"], k), mops=ops / t / 1e6, imbalance=g.imbalance.median(),
-                         t_cpu=g.t_cpu.median(), t_pim=g.t_pim.median(), t_comm=g.t_comm.median()))
+        if g.op.iloc[0] == "lookup" and len(g) > 2:
+            g = g[g.batch_idx >= 2]
+        t, ops = g.t_total.sum(), g.ops.sum()
+        rows.append(dict(zip(keys + ["op"], k), mops=ops / t / 1e6, imbalance=g.imbalance.mean(),
+                         t_cpu=g.t_cpu.mean(), t_pim=g.t_pim.mean(), t_comm=g.t_comm.mean()))
     return pd.DataFrame(rows)
 
 
@@ -165,7 +165,7 @@ def main():
                 else:
                     cells.append("-")
             L.append(f"| {op} | {name} | " + " | ".join(cells) + " |")
-    L += ["", "## Hot keys over Varden data, 64 DPUs (lookup Mop/s, median batch)", "",
+    L += ["", "## Hot keys over Varden data, 64 DPUs (lookup Mop/s, batches 3-10)", "",
           "| Query skew | baseline | + dedup + cache | adaptive |", "|---|---|---|---|"]
     for q in ["uniform", "1.0", "1.2"]:
         cells = []
@@ -192,8 +192,9 @@ def cpu_median_from(c, keys):
     c = c[c.op.isin(["insert", "lookup"])]
     per = []
     for k, g in c.groupby(keys + ["rep"]):
-        if g.op.iloc[0] == "lookup" and len(g) > 1:
-            m = g.ops.median() / g.seconds.median() / 1e6
+        if g.op.iloc[0] == "lookup" and len(g) > 2:
+            g = g[g.batch_idx >= 2]
+            m = g.ops.sum() / g.seconds.sum() / 1e6
         else:
             m = g.ops.sum() / g.seconds.sum() / 1e6
         per.append(dict(zip(keys + ["rep"], k), mops=m))

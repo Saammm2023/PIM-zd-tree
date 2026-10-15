@@ -1,0 +1,23 @@
+ok    contrib_16_quniform_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.6_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q0.8_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.2_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_16_q1.5_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_quniform_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.6_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q0.8_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.2_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_q1.5_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    contrib_64_strongdata_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    varden_hot_64_quniform_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    varden_hot_64_q1.0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    varden_hot_64_q1.2_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    varden_mix_64_f0_adaptive  Match Num: 50000; Unmatch Num: 0
+ok    varden_mix_64_f0.0001_adaptive  Match Num: 49993; Unmatch Num: 7
+ok    varden_mix_64_f0.001_adaptive  Match Num: 49942; Unmatch Num: 58
+ok    varden_mix_64_f0.01_adaptive  Match Num: 49509; Unmatch Num: 491
+ok    varden_mix_64_f0.02_adaptive  Match Num: 49021; Unmatch Num: 979
+ok    varden_mix_64_f0.05_adaptive  Match Num: 47473; Unmatch Num: 2527
+NOTE  varden_mix_64_f0.1_adaptive first faulted at DPU init (DPU 43, before any data); rerun by hand: ok

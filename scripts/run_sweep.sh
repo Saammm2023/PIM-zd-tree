@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Experiment sweep for the report. Writes CSVs under results/raw/ and one log per run under results/logs/.
-#   scripts/run_sweep.sh [scaling|batch|skewcmp|contrib|varden|varden_mix|cpu|all]
+#   scripts/run_sweep.sh [scaling|batch|skewcmp|contrib|varden|varden_mix|adaptive_rerun|cpu|all]
 # Needs: source ~/upmem-sdk/env-sim.sh, and cpu_baseline/cpu_bench built (make -C cpu_baseline).
 set -u
 cd "$(dirname "$0")/.."
@@ -164,6 +164,38 @@ varden_mix() {
     done
 }
 
+adaptive_rerun() {
+    # Re-run only the adaptive variant everywhere it appears (after changing its rule); drops its old rows first
+    local V=${VARDEN:-../varden}
+    build 16 64
+    for f in "$RAW"/contrib_batches.csv "$RAW"/contrib_dpus.csv "$RAW"/varden_hot_batches.csv "$RAW"/varden_hot_dpus.csv \
+             "$RAW"/varden_mix_batches.csv "$RAW"/varden_mix_dpus.csv; do
+        [ -f "$f" ] && grep -v "_adaptive," "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+    done
+    local LOOK="-s 1 -S 50000 --search-round 10"
+    local A="--lookup-adaptive --hot-cache-size 256"
+    for d in 16 64; do
+        for q in uniform 0.6 0.8 1.0 1.2 1.5; do
+            local qarg="--query-dist zipf --query-zipf-s $q"
+            [ "$q" = uniform ] && qarg="--query-dist uniform"
+            run_pim "contrib_${d}_q${q}_adaptive" $d "$RAW/contrib" "uniform_quantile_q${q}_adaptive" \
+                $WARMUP $LOOK $qarg $A ${DIST[uniform]}
+        done
+    done
+    run_pim "contrib_64_strongdata_q1.0_adaptive" 64 "$RAW/contrib" "strong_quantile_q1.0_adaptive" \
+        $WARMUP $LOOK --query-dist zipf --query-zipf-s 1.0 $A ${DIST[strong]}
+    for q in uniform 1.0 1.2; do
+        local qarg="--query-dist zipf --query-zipf-s $q"
+        [ "$q" = uniform ] && qarg="--query-dist uniform"
+        run_pim "varden_hot_64_q${q}_adaptive" 64 "$RAW/varden_hot" "varden_quantile_q${q}_adaptive" \
+            $WARMUP $LOOK $qarg $A --input "$V/varden_data.pts"
+    done
+    for f in 0 0.0001 0.001 0.01 0.02 0.05 0.1; do
+        run_pim "varden_mix_64_f${f}_adaptive" 64 "$RAW/varden_mix" "uniform_quantile_f${f}_adaptive" \
+            $WARMUP $LOOK --query-dist mix --query-file "$V/varden_query.pts" --query-mix $f $A ${DIST[uniform]}
+    done
+}
+
 varden_cpu() {
     # CPU baselines on the Varden data and the Fig. 9 query streams (20 threads, 3 repetitions)
     local V=${VARDEN:-../varden}
@@ -219,7 +251,8 @@ case "${1:-all}" in
     contrib) contrib ;;
     varden) varden ;;
     varden_mix) varden_mix ;;
+    adaptive_rerun) adaptive_rerun ;;
     cpu) cpu ;;
     all) cpu; scaling; batch; skewcmp; contrib ;;
-    *) echo "usage: $0 [scaling|batch|skewcmp|contrib|varden|varden_mix|cpu|all]"; exit 1 ;;
+    *) echo "usage: $0 [scaling|batch|skewcmp|contrib|varden|varden_mix|adaptive_rerun|cpu|all]"; exit 1 ;;
 esac

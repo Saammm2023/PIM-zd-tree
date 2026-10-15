@@ -55,3 +55,16 @@ strong_quantile_q1.0_base,64,zipf,1.5,1024,22,1,800000,0.9781,0.7972
 strong_quantile_q1.0_dedup,64,zipf,1.5,1024,22,1,800000,0.9781,0.7972
 strong_quantile_q1.0_cache,64,zipf,1.5,1024,22,1,800000,0.9781,0.7972
 strong_quantile_q1.0_adaptive,64,zipf,1.5,1024,22,1,800000,0.9781,0.7972
+uniform_quantile_quniform_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_q0.6_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_q0.8_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_q1.0_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_q1.2_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_q1.5_adaptive,16,uniform,1,1024,22,1,800000,0.0286,0.0029
+uniform_quantile_quniform_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_q0.6_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_q0.8_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_q1.0_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_q1.2_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_q1.5_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+strong_quantile_q1.0_adaptive,64,zipf,1.5,1024,22,1,800000,0.9781,0.7972

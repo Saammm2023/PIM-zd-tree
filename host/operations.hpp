@@ -60,12 +60,18 @@ public:
     bool lookup_dedup = false;  // send each distinct key once per lookup batch
     HotKeyCache hot_cache;      // answers lookups of hot, known-present keys on the host
     KeyDedupTable dedup_table;
-    // Adaptive: dedup and cache only pay off when a BSP round would wait on a hot DPU. The host knows every
-    // lookup's target DPU before sending, so it uses them only when the busiest DPU would get more than
-    // adaptive_threshold times the mean number of lookups.
+    // Adaptive: dedup and cache only pay off when a BSP round would wait on a hot DPU AND the hot work repeats.
+    // The host knows every lookup's target DPU before sending, so it uses them only when the busiest DPU would
+    // get more than adaptive_threshold times the mean number of lookups. A hot spot of distinct keys (e.g.
+    // Varden queries) has nothing to deduplicate, so the new path is also skipped while the last batch that ran
+    // it saved less than adaptive_repeat_threshold of its lookups, re-checking every adaptive_probe_every batches.
     bool lookup_adaptive = false;
     double adaptive_threshold = 1.2;
-    uint64_t adaptive_skipped = 0, adaptive_batches = 0;
+    double adaptive_repeat_threshold = 0.05;
+    int adaptive_probe_every = 8;
+    double last_saved_fraction = 1.0;  // lookups the new path kept off PIM in its last batch (optimistic at start)
+    int batches_since_probe = 0;
+    uint64_t adaptive_skipped = 0, adaptive_norepeat_skipped = 0, adaptive_batches = 0;
     uint64_t *partition_borders;
 
     pim_zd_tree() {
@@ -865,6 +871,14 @@ public:
                     use_dedup = false;
                     this->adaptive_skipped++;
                 }
+                else if(this->last_saved_fraction < this->adaptive_repeat_threshold &&
+                        this->batches_since_probe + 1 < this->adaptive_probe_every) {
+                    use_dedup = false;
+                    this->batches_since_probe++;
+                    this->adaptive_skipped++;
+                    this->adaptive_norepeat_skipped++;
+                }
+                else this->batches_since_probe = 0;
             });
         }
         if(!use_dedup) {
@@ -939,6 +953,7 @@ public:
                 }
             });
             size_t m = unique_keys.size();
+            this->last_saved_fraction = this->length > 0 ? 1.0 - (double)m / (double)this->length : 0.0;
             if(m > 0) {
                 time_nested("exec", [&](){ASSERT(io->exec());});
                 time_nested("get result", [&]() {

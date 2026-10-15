@@ -377,102 +377,102 @@ timer count: 1
 Timer 0: 
 /----------------------------------------\
 Timer -> dpu: 
-        Average Time : 0.00599811
-          Total Time : 0.0119962
+        Average Time : 0.00656315
+          Total Time : 0.0131263
 Proportion: 
- -> wait             : 60 % : 0.00363077
- -> other            : 39 %
-Details: 0.007244 0.004752 
+ -> wait             : 38 % : 0.00255041
+ -> other            : 61 %
+Details: 0.008122 0.005004 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> dpu -> wait: 
-Average Time         : 0.00363077
-Total Time           : 0.00726155
+Average Time         : 0.00255041
+Total Time           : 0.00510083
 Proportion: 
  -> other            : 100%
-Details: 0.007154 0.000107 
+Details: 0.000170 0.004931 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert: 
-Average Time         : 0.376336
-Total Time           : 3.76336
+Average Time         : 0.312878
+Total Time           : 3.12878
 Proportion: 
- -> init             : 0  % : 0.00234401
- -> insert_vector    : 63 % : 0.240761
- -> search           : 35 % : 0.133212
+ -> init             : 0  % : 0.00203689
+ -> insert_vector    : 63 % : 0.199302
+ -> search           : 35 % : 0.111517
  -> other            : 0  %
-Details: 0.256955 0.395774 0.359893 0.349854 0.337890 0.348959 0.362617 0.389789 0.444527 0.517102 
+Details: 0.226162 0.315735 0.300227 0.292009 0.279427 0.290849 0.291583 0.320293 0.365064 0.447430 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> init: 
-Average Time         : 0.00234401
-Total Time           : 0.0234401
+Average Time         : 0.00203689
+Total Time           : 0.0203689
 Proportion: 
  -> other            : 100%
-Details: 0.002647 0.002318 0.002308 0.002258 0.002355 0.002244 0.002365 0.002132 0.002553 0.002261 
+Details: 0.002570 0.002133 0.001892 0.001949 0.002143 0.001877 0.001966 0.001832 0.001948 0.002060 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector: 
-Average Time         : 0.240761
-Total Time           : 2.40761
+Average Time         : 0.199302
+Total Time           : 1.99302
 Proportion: 
- -> exec             : 99 % : 0.239462
- -> get result       : 0  % : 2.965e-07
- -> group by target  : 0  % : 0.000754621
- -> taskgen          : 0  % : 0.000523521
+ -> exec             : 99 % : 0.198095
+ -> get result       : 0  % : 1.887e-07
+ -> group by target  : 0  % : 0.000686133
+ -> taskgen          : 0  % : 0.000501978
  -> other            : 0  %
-Details: 0.186587 0.246420 0.220695 0.209832 0.197929 0.208885 0.222029 0.246846 0.294934 0.373450 
+Details: 0.154815 0.198601 0.178928 0.172939 0.169989 0.170586 0.177248 0.199505 0.250761 0.319646 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec: 
-Average Time         : 0.239462
-Total Time           : 2.39462
+Average Time         : 0.198095
+Total Time           : 1.98095
 Proportion: 
- -> dpu              : 99 % : 0.239056
- -> lock             : 0  % : 2.784e-07
- -> receive          : 0  % : 4.4788e-06
- -> send             : 0  % : 0.000173731
- -> unlock           : 0  % : 2.807e-07
+ -> dpu              : 99 % : 0.197723
+ -> lock             : 0  % : 2.352e-07
+ -> receive          : 0  % : 3.4193e-06
+ -> send             : 0  % : 0.000189553
+ -> unlock           : 0  % : 1.966e-07
  -> other            : 0  %
-Details: 0.185489 0.245167 0.219353 0.208455 0.196620 0.207501 0.220648 0.245525 0.293673 0.372186 
+Details: 0.153854 0.197262 0.177774 0.171597 0.168616 0.169404 0.176012 0.198258 0.249656 0.318517 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> dpu: 
-Average Time         : 0.239056
-Total Time           : 2.39056
+Average Time         : 0.197723
+Total Time           : 1.97723
 Proportion: 
- -> wait             : 65 % : 0.155733
- -> other            : 34 %
-Details: 0.184741 0.244762 0.218974 0.208126 0.196255 0.207188 0.220187 0.245196 0.293332 0.371798 
+ -> wait             : 54 % : 0.108723
+ -> other            : 45 %
+Details: 0.153372 0.196950 0.177395 0.171222 0.168188 0.169043 0.175727 0.197912 0.249277 0.318140 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> dpu -> wait: 
-Average Time         : 0.155733
-Total Time           : 1.55733
+Average Time         : 0.108723
+Total Time           : 1.08723
 Proportion: 
  -> other            : 100%
-Details: 0.000141 0.244679 0.218909 0.208065 0.000162 0.000105 0.220122 0.000112 0.293296 0.371743 
+Details: 0.153321 0.196909 0.000199 0.000107 0.000137 0.168983 0.000113 0.000145 0.249220 0.318092 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> lock: 
-Average Time         : 2.784e-07
-Total Time           : 2.784e-06
+Average Time         : 2.352e-07
+Total Time           : 2.352e-06
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
@@ -481,61 +481,61 @@ Occurance: 10
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> receive: 
-Average Time         : 4.4788e-06
-Total Time           : 4.4788e-05
+Average Time         : 3.4193e-06
+Total Time           : 3.4193e-05
 Proportion: 
- -> pre_working      : 16 % : 7.388e-07
+ -> pre_working      : 16 % : 5.679e-07
  -> other            : 83 %
-Details: 0.000010 0.000006 0.000004 0.000004 0.000004 0.000003 0.000004 0.000003 0.000004 0.000005 
+Details: 0.000005 0.000004 0.000004 0.000003 0.000004 0.000004 0.000003 0.000002 0.000003 0.000003 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> receive -> pre_working: 
-Average Time         : 7.388e-07
-Total Time           : 7.388e-06
+Average Time         : 5.679e-07
+Total Time           : 5.679e-06
 Proportion: 
  -> other            : 100%
-Details: 0.000001 0.000001 0.000001 0.000000 0.000000 0.000001 0.000001 0.000000 0.000000 0.000001 
+Details: 0.000001 0.000001 0.000000 0.000000 0.000000 0.000001 0.000000 0.000000 0.000001 0.000001 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> send: 
-Average Time         : 0.000173731
-Total Time           : 0.00173731
+Average Time         : 0.000189553
+Total Time           : 0.00189553
 Proportion: 
- -> pre send         : 1  % : 2.7435e-06
- -> trigger          : 96 % : 0.000166975
+ -> pre send         : 1  % : 2.2286e-06
+ -> trigger          : 96 % : 0.000183408
  -> other            : 2  %
-Details: 0.000188 0.000181 0.000190 0.000145 0.000194 0.000160 0.000202 0.000164 0.000160 0.000153 
+Details: 0.000218 0.000172 0.000233 0.000207 0.000230 0.000172 0.000153 0.000190 0.000177 0.000142 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> send -> pre send: 
-Average Time         : 2.7435e-06
-Total Time           : 2.7435e-05
+Average Time         : 2.2286e-06
+Total Time           : 2.2286e-05
 Proportion: 
  -> other            : 100%
-Details: 0.000001 0.000003 0.000003 0.000003 0.000003 0.000003 0.000006 0.000002 0.000002 0.000003 
+Details: 0.000001 0.000002 0.000002 0.000002 0.000004 0.000002 0.000002 0.000002 0.000002 0.000002 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> send -> trigger: 
-Average Time         : 0.000166975
-Total Time           : 0.00166975
+Average Time         : 0.000183408
+Total Time           : 0.00183408
 Proportion: 
  -> other            : 100%
-Details: 0.000183 0.000175 0.000183 0.000138 0.000186 0.000154 0.000191 0.000158 0.000154 0.000148 
+Details: 0.000214 0.000166 0.000227 0.000204 0.000220 0.000164 0.000148 0.000182 0.000171 0.000137 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> exec -> unlock: 
-Average Time         : 2.807e-07
-Total Time           : 2.807e-06
+Average Time         : 1.966e-07
+Total Time           : 1.966e-06
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
@@ -544,87 +544,87 @@ Occurance: 10
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> get result: 
-Average Time         : 2.965e-07
-Total Time           : 2.965e-06
+Average Time         : 1.887e-07
+Total Time           : 1.887e-06
 Proportion: 
  -> other            : 100%
-Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000001 0.000000 
+Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> group by target: 
-Average Time         : 0.000754621
-Total Time           : 0.00754621
+Average Time         : 0.000686133
+Total Time           : 0.00686133
 Proportion: 
  -> other            : 100%
-Details: 0.000703 0.000744 0.000802 0.000822 0.000774 0.000819 0.000773 0.000702 0.000706 0.000701 
+Details: 0.000677 0.000725 0.000644 0.000766 0.000818 0.000669 0.000579 0.000722 0.000585 0.000676 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> insert_vector -> taskgen: 
-Average Time         : 0.000523521
-Total Time           : 0.00523521
+Average Time         : 0.000501978
+Total Time           : 0.00501978
 Proportion: 
  -> other            : 100%
-Details: 0.000370 0.000491 0.000520 0.000538 0.000516 0.000541 0.000582 0.000599 0.000535 0.000544 
+Details: 0.000264 0.000594 0.000492 0.000551 0.000527 0.000494 0.000645 0.000508 0.000505 0.000439 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search: 
-Average Time         : 0.133212
-Total Time           : 1.33212
+Average Time         : 0.111517
+Total Time           : 1.11517
 Proportion: 
- -> exec             : 99 % : 0.132982
- -> get result       : 0  % : 6.84039e-05
- -> taskgen          : 0  % : 0.000150947
+ -> exec             : 99 % : 0.11127
+ -> get result       : 0  % : 8.67138e-05
+ -> taskgen          : 0  % : 0.000152824
  -> other            : 0  %
-Details: 0.067688 0.147014 0.136868 0.137749 0.137589 0.137815 0.138206 0.140800 0.147011 0.141377 
+Details: 0.068746 0.114962 0.119387 0.117095 0.107275 0.118365 0.112351 0.118945 0.112343 0.125704 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec: 
-Average Time         : 0.132982
-Total Time           : 1.32982
+Average Time         : 0.11127
+Total Time           : 1.1127
 Proportion: 
- -> dpu              : 99 % : 0.132502
- -> lock             : 0  % : 2.81e-07
- -> receive          : 0  % : 0.000161478
- -> send             : 0  % : 0.000147962
- -> unlock           : 0  % : 2.743e-07
+ -> dpu              : 99 % : 0.11078
+ -> lock             : 0  % : 2.472e-07
+ -> receive          : 0  % : 0.000167729
+ -> send             : 0  % : 0.000129795
+ -> unlock           : 0  % : 2.109e-07
  -> other            : 0  %
-Details: 0.067399 0.146794 0.136642 0.137541 0.137371 0.137600 0.137984 0.140579 0.146741 0.141166 
+Details: 0.068452 0.114664 0.119153 0.116826 0.107031 0.118105 0.112152 0.118735 0.112123 0.125454 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> dpu: 
-Average Time         : 0.132502
-Total Time           : 1.32502
+Average Time         : 0.11078
+Total Time           : 1.1078
 Proportion: 
- -> wait             : 89 % : 0.118708
- -> other            : 10 %
-Details: 0.066872 0.146218 0.136154 0.137114 0.136934 0.137184 0.137453 0.140118 0.146293 0.140681 
+ -> wait             : 72 % : 0.0804924
+ -> other            : 27 %
+Details: 0.067961 0.114105 0.118710 0.116346 0.106529 0.117535 0.111691 0.118247 0.111630 0.125046 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> dpu -> wait: 
-Average Time         : 0.118708
-Total Time           : 1.18708
+Average Time         : 0.0804924
+Total Time           : 0.804924
 Proportion: 
  -> other            : 100%
-Details: 0.066792 0.146118 0.136085 0.137049 0.136869 0.137126 0.000145 0.140061 0.146208 0.140627 
+Details: 0.000161 0.114053 0.000249 0.000134 0.106473 0.117482 0.111634 0.118188 0.111592 0.124957 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> lock: 
-Average Time         : 2.81e-07
-Total Time           : 2.81e-06
+Average Time         : 2.472e-07
+Total Time           : 2.472e-06
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
@@ -633,94 +633,94 @@ Occurance: 10
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> receive: 
-Average Time         : 0.000161478
-Total Time           : 0.00161478
+Average Time         : 0.000167729
+Total Time           : 0.00167729
 Proportion: 
- -> more fetching    : 1  % : 2.0543e-06
- -> post receiving   : 2  % : 4.3451e-06
- -> pre_working      : 0  % : 6.405e-07
- -> trigger          : 80 % : 0.000129498
- -> other            : 15 %
-Details: 0.000186 0.000239 0.000163 0.000129 0.000143 0.000134 0.000157 0.000136 0.000146 0.000182 
+ -> more fetching    : 2  % : 4.5792e-06
+ -> post receiving   : 1  % : 3.3326e-06
+ -> pre_working      : 0  % : 6.824e-07
+ -> trigger          : 83 % : 0.000139659
+ -> other            : 11 %
+Details: 0.000187 0.000162 0.000174 0.000163 0.000151 0.000245 0.000155 0.000136 0.000176 0.000130 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> receive -> more fetching: 
-Average Time         : 2.0543e-06
-Total Time           : 2.0543e-05
+Average Time         : 4.5792e-06
+Total Time           : 4.5792e-05
 Proportion: 
  -> other            : 100%
-Details: 0.000004 0.000004 0.000001 0.000001 0.000001 0.000001 0.000004 0.000001 0.000001 0.000001 
+Details: 0.000001 0.000001 0.000001 0.000001 0.000001 0.000035 0.000001 0.000001 0.000001 0.000001 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> receive -> post receiving: 
-Average Time         : 4.3451e-06
-Total Time           : 4.3451e-05
+Average Time         : 3.3326e-06
+Total Time           : 3.3326e-05
 Proportion: 
  -> other            : 100%
-Details: 0.000005 0.000005 0.000004 0.000004 0.000004 0.000004 0.000005 0.000005 0.000005 0.000003 
+Details: 0.000003 0.000003 0.000003 0.000003 0.000003 0.000005 0.000003 0.000004 0.000004 0.000004 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> receive -> pre_working: 
-Average Time         : 6.405e-07
-Total Time           : 6.405e-06
+Average Time         : 6.824e-07
+Total Time           : 6.824e-06
 Proportion: 
  -> other            : 100%
-Details: 0.000000 0.000001 0.000000 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 
+Details: 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 0.000001 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> receive -> trigger: 
-Average Time         : 0.000129498
-Total Time           : 0.00129498
+Average Time         : 0.000139659
+Total Time           : 0.00139659
 Proportion: 
  -> other            : 100%
-Details: 0.000145 0.000179 0.000126 0.000113 0.000126 0.000107 0.000117 0.000115 0.000117 0.000150 
+Details: 0.000145 0.000139 0.000152 0.000152 0.000133 0.000170 0.000128 0.000111 0.000152 0.000116 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> send: 
-Average Time         : 0.000147962
-Total Time           : 0.00147962
+Average Time         : 0.000129795
+Total Time           : 0.00129795
 Proportion: 
- -> pre send         : 1  % : 1.9608e-06
- -> trigger          : 96 % : 0.00014233
+ -> pre send         : 1  % : 2.0312e-06
+ -> trigger          : 95 % : 0.000124047
  -> other            : 2  %
-Details: 0.000162 0.000175 0.000163 0.000134 0.000126 0.000126 0.000180 0.000133 0.000130 0.000152 
+Details: 0.000126 0.000139 0.000130 0.000183 0.000127 0.000118 0.000118 0.000135 0.000104 0.000116 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> send -> pre send: 
-Average Time         : 1.9608e-06
-Total Time           : 1.9608e-05
+Average Time         : 2.0312e-06
+Total Time           : 2.0312e-05
 Proportion: 
  -> other            : 100%
-Details: 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 
+Details: 0.000002 0.000004 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 0.000002 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> send -> trigger: 
-Average Time         : 0.00014233
-Total Time           : 0.0014233
+Average Time         : 0.000124047
+Total Time           : 0.00124047
 Proportion: 
  -> other            : 100%
-Details: 0.000155 0.000169 0.000156 0.000129 0.000120 0.000120 0.000175 0.000128 0.000124 0.000146 
+Details: 0.000121 0.000129 0.000125 0.000177 0.000122 0.000113 0.000114 0.000130 0.000100 0.000112 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> exec -> unlock: 
-Average Time         : 2.743e-07
-Total Time           : 2.743e-06
+Average Time         : 2.109e-07
+Total Time           : 2.109e-06
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 
@@ -729,28 +729,28 @@ Occurance: 10
 
 /----------------------------------------\
 Timer -> insert -> search -> get result: 
-Average Time         : 6.84039e-05
-Total Time           : 0.000684039
+Average Time         : 8.67138e-05
+Total Time           : 0.000867138
 Proportion: 
  -> other            : 100%
-Details: 0.000125 0.000060 0.000066 0.000051 0.000066 0.000064 0.000064 0.000064 0.000066 0.000060 
+Details: 0.000113 0.000102 0.000069 0.000103 0.000081 0.000111 0.000070 0.000074 0.000084 0.000061 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> insert -> search -> taskgen: 
-Average Time         : 0.000150947
-Total Time           : 0.00150947
+Average Time         : 0.000152824
+Total Time           : 0.00152824
 Proportion: 
  -> other            : 100%
-Details: 0.000153 0.000150 0.000152 0.000147 0.000145 0.000146 0.000146 0.000150 0.000174 0.000145 
+Details: 0.000171 0.000182 0.000157 0.000161 0.000155 0.000140 0.000124 0.000131 0.000127 0.000180 
 Occurance: 10
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> lock: 
-Average Time         : 4.955e-07
-Total Time           : 9.91e-07
+Average Time         : 4.185e-07
+Total Time           : 8.37e-07
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000001 
@@ -759,73 +759,73 @@ Occurance: 2
 
 /----------------------------------------\
 Timer -> receive: 
-Average Time         : 5.421e-06
-Total Time           : 1.0842e-05
+Average Time         : 4.987e-06
+Total Time           : 9.974e-06
 Proportion: 
- -> pre_working      : 9  % : 5.29e-07
- -> other            : 90 %
+ -> pre_working      : 7  % : 3.625e-07
+ -> other            : 92 %
 Details: 0.000008 0.000002 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> receive -> pre_working: 
-Average Time         : 5.29e-07
-Total Time           : 1.058e-06
+Average Time         : 3.625e-07
+Total Time           : 7.25e-07
 Proportion: 
  -> other            : 100%
-Details: 0.000000 0.000001 
+Details: 0.000000 0.000000 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> send: 
-Average Time         : 0.000236516
-Total Time           : 0.000473032
+Average Time         : 0.000231862
+Total Time           : 0.000463724
 Proportion: 
- -> pre send         : 0  % : 1.0675e-06
- -> trigger          : 97 % : 0.000230393
+ -> pre send         : 0  % : 1.711e-06
+ -> trigger          : 96 % : 0.000223445
  -> other            : 2  %
-Details: 0.000241 0.000232 
+Details: 0.000221 0.000243 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> send -> pre send: 
-Average Time         : 1.0675e-06
-Total Time           : 2.135e-06
+Average Time         : 1.711e-06
+Total Time           : 3.422e-06
 Proportion: 
  -> other            : 100%
-Details: 0.000001 0.000001 
+Details: 0.000002 0.000001 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> send -> trigger: 
-Average Time         : 0.000230393
-Total Time           : 0.000460785
+Average Time         : 0.000223445
+Total Time           : 0.00044689
 Proportion: 
  -> other            : 100%
-Details: 0.000234 0.000226 
+Details: 0.000209 0.000238 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> switchto1: 
-Average Time         : 0.000810066
-Total Time           : 0.00162013
+Average Time         : 0.00100666
+Total Time           : 0.00201332
 Proportion: 
- -> lock             : 0  % : 2.29e-07
- -> unlock           : 0  % : 2.62e-07
+ -> lock             : 0  % : 1.75e-07
+ -> unlock           : 0  % : 3.55e-07
  -> other            : 99 %
-Details: 0.001620 0.000000 
+Details: 0.002013 0.000000 
 Occurance: 2
 \----------------------------------------/
 
 /----------------------------------------\
 Timer -> switchto1 -> lock: 
-Average Time         : 2.29e-07
-Total Time           : 2.29e-07
+Average Time         : 1.75e-07
+Total Time           : 1.75e-07
 Proportion: 
  -> other            : 100%
 Details: 0.000000 
@@ -834,8 +834,8 @@ Occurance: 1
 
 /----------------------------------------\
 Timer -> switchto1 -> unlock: 
-Average Time         : 2.62e-07
-Total Time           : 2.62e-07
+Average Time         : 3.55e-07
+Total Time           : 3.55e-07
 Proportion: 
  -> other            : 100%
 Details: 0.000000 
@@ -844,8 +844,8 @@ Occurance: 1
 
 /----------------------------------------\
 Timer -> unlock: 
-Average Time         : 2.22e-07
-Total Time           : 4.44e-07
+Average Time         : 2.06e-07
+Total Time           : 4.12e-07
 Proportion: 
  -> other            : 100%
 Details: 0.000000 0.000000 
@@ -900,47 +900,47 @@ Timer 0:
  -> unlock
 timer count: 1
 Timer 0: 
-Average Time: 0.005998
-Average Time: 0.003631
-Average Time: 0.376336
-Average Time: 0.002344
-Average Time: 0.240761
-Average Time: 0.239462
-Average Time: 0.239056
-Average Time: 0.155733
+Average Time: 0.006563
+Average Time: 0.002550
+Average Time: 0.312878
+Average Time: 0.002037
+Average Time: 0.199302
+Average Time: 0.198095
+Average Time: 0.197723
+Average Time: 0.108723
 Average Time: 0.000000
-Average Time: 0.000004
-Average Time: 0.000001
-Average Time: 0.000174
 Average Time: 0.000003
-Average Time: 0.000167
-Average Time: 0.000000
-Average Time: 0.000000
-Average Time: 0.000755
-Average Time: 0.000524
-Average Time: 0.133212
-Average Time: 0.132982
-Average Time: 0.132502
-Average Time: 0.118708
-Average Time: 0.000000
-Average Time: 0.000161
-Average Time: 0.000002
-Average Time: 0.000004
 Average Time: 0.000001
-Average Time: 0.000129
-Average Time: 0.000148
+Average Time: 0.000190
 Average Time: 0.000002
-Average Time: 0.000142
+Average Time: 0.000183
 Average Time: 0.000000
-Average Time: 0.000068
-Average Time: 0.000151
+Average Time: 0.000000
+Average Time: 0.000686
+Average Time: 0.000502
+Average Time: 0.111517
+Average Time: 0.111270
+Average Time: 0.110780
+Average Time: 0.080492
+Average Time: 0.000000
+Average Time: 0.000168
+Average Time: 0.000005
+Average Time: 0.000003
+Average Time: 0.000001
+Average Time: 0.000140
+Average Time: 0.000130
+Average Time: 0.000002
+Average Time: 0.000124
+Average Time: 0.000000
+Average Time: 0.000087
+Average Time: 0.000153
 Average Time: 0.000000
 Average Time: 0.000005
-Average Time: 0.000001
-Average Time: 0.000237
-Average Time: 0.000001
-Average Time: 0.000230
-Average Time: 0.000810
+Average Time: 0.000000
+Average Time: 0.000232
+Average Time: 0.000002
+Average Time: 0.000223
+Average Time: 0.001007
 Average Time: 0.000000
 Average Time: 0.000000
 Average Time: 0.000000
@@ -1017,7 +1017,6 @@ Current epoch: 1
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 fe949c10ccb629aa fe9497c6ea387640
 98ff6372d1ce8baa 98ff64c871a3250a
@@ -1049,7 +1048,6 @@ Current epoch: 2
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 14fd9437ab7bdcc8 14fd9825f445c87e
 14fd864fd60467ae 14fd5b4c0a0555bc
@@ -1081,7 +1079,6 @@ Current epoch: 3
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 fe948e40bfd1d670 fe948a9e1a447d20
 14fd946e879368ca 14fd9825f445c87e
@@ -1113,7 +1110,6 @@ Current epoch: 4
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 98ff633e34bfe8dc 98ff64c871a3250a
 8a4347dad67954e0 8a4378ba130f7e36
@@ -1145,7 +1141,6 @@ Current epoch: 5
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 fe94833ff329f8f2 fe948a9e1a447d20
 98ff633f5f684210 98ff64c871a3250a
@@ -1177,7 +1172,6 @@ Current epoch: 6
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 4f1535b4ff6fcf06 4f152929f2e5e27c
 fe948e41a8365c58 fe948a9e1a447d20
@@ -1209,7 +1203,6 @@ Current epoch: 7
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 fe948a5a2974a59c fe948a9e1a447d20
 fe94876491b807e8 fe948a9e1a447d20
@@ -1273,7 +1266,6 @@ Current epoch: 9
  -> search max match -> exec -> receive -> post receiving
  -> search max match -> exec -> unlock
  -> search max match -> get result
- -> search max match -> fan out
 ------------ Search Results --------------
 f171210a1554ab4a f1712a796cdcb8b0
 8a43630eaad79320 8a4378ba130f7e36
@@ -1286,5 +1278,5 @@ f17122a4b501e8c2 f1712a796cdcb8b0
 8a436305c3d8cac6 8a4378ba130f7e36
 8a43630f1bf96ce2 8a4378ba130f7e36
 Match Num: 44944; Unmatch Num: 5056
-Adaptive lookups: dedup skipped in 0 of 10 batches
-Hot-key cache: 256 keys, 123 hits of 500000 lookups
+Adaptive lookups: dedup skipped in 8 of 10 batches (8 for lack of repeats)
+Hot-key cache: 256 keys, 15 hits of 100000 lookups

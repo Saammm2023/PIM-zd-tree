@@ -40,8 +40,8 @@ the 800k-point set (its hottest DPU overflows leaf storage). At 200k points it f
 0.7 (insert) and 1.1–1.3 (lookup) Mop/s from 8 to 64 DPUs, with imbalance 2.8× → 19.9×.
 
 Our addition on Varden data (hot keys drawn from the Varden points, 64 DPUs): baseline 6.6 / 2.9 Mop/s at Zipf
-s = 1.0 / 1.2 → **29.5 / 50.8 Mop/s** with dedup + cache (4.5× / 17.6×). With uniform keys the adaptive variant matches
-the baseline (20.7 vs 20.8).
+s = 1.0 / 1.2 → **29.6 / 50.6 Mop/s** with dedup + cache (4.5× / 17.6×). With uniform keys the adaptive variant stays
+within 5% of the baseline (19.9 vs 20.8).
 
 ## 2. Paper Fig. 9 for point lookups
 
@@ -51,19 +51,24 @@ generally not stored (they return "unmatched", which is expected).
 
 | Varden share | 0 | 0.1‰ | 1‰ | 1% | 2% | 5% | 10% |
 |---|---|---|---|---|---|---|---|
-| baseline (Mop/s) | 25.5 | 25.6 | 24.9 | 23.3 | 21.3 | 17.1 | 12.6 |
-| imbalance | 1.09× | 1.09× | 1.09× | 1.16× | 1.30× | 1.71× | 2.39× |
-| adaptive dedup + cache | 25.5 | 25.2 | 24.3 | 23.0 | 16.2 | 13.6 | 10.8 |
-| Pkd-tree CPU | 18.4 | 19.1 | 18.0 | 17.8 | 17.9 | 18.1 | 18.8 |
+| baseline (Mop/s) | 25.7 | 25.7 | 25.1 | 23.1 | 21.4 | 17.1 | 12.3 |
+| imbalance | 1.10× | 1.10× | 1.10× | 1.17× | 1.29× | 1.71× | 2.40× |
+| adaptive dedup + cache (with repeat check) | 23.7 | 23.1 | 24.1 | 22.5 | 19.7 | 16.3 | 12.4 |
+| Pkd-tree CPU | 18.8 | 19.1 | 18.1 | 17.8 | 17.9 | 18.2 | 18.7 |
+
+Throughput over batches 3–10 of 10 batches of 50k lookups. One adaptive run (10%) first faulted at DPU
+initialisation, before any data was inserted; it passed on rerun (noted in `results/sweep_adaptive_rerun.log`).
 
 **Reproduced, qualitatively:** the throughput-optimized PIM-zd-tree loses throughput as spatially skewed queries are
 mixed in, because the DPUs owning the hot regions become stragglers (imbalance 2.4× at 10%). It falls below the
 Pkd-tree from about 5%. The CPU tree is unaffected. The paper reports a steeper drop (10.66× at 2%) for kNN queries,
 which do far more work around each hot spot than our single-leaf point lookups, so they amplify the imbalance.
 
-**A limit of our addition, found by this benchmark:** Varden queries are distinct points, so deduplication and the
-hot-key cache find nothing to remove. The adaptive switch still turns the new path on (it sees a hot DPU), and its
-extra host work (about 0.8 ms per batch) makes lookups up to 24% slower than the baseline from 2% on. Two ways to fix
-it: also require a repeat rate (skip the new path when the last batch that used it saved under ~5% of lookups,
-re-checking every few batches), or split hot regions by re-partitioning (the paper's skew-resistant layout).
-Re-partitioning is outside what our host-only addition can do.
+**A limit of our addition, found by this benchmark, and how we handled it:** Varden queries are distinct points, so
+deduplication and the hot-key cache find nothing to remove. The first version of the adaptive switch looked only at
+the hot DPU, took the new path anyway, and its extra host work (about 0.8 ms per batch) made lookups up to 24% slower
+than the baseline from 2% on. The switch now also requires repeats: it skips the new path while the last batch that
+took it kept fewer than 5% of lookups off the DPUs, re-checking every 8 batches. It now stays within about 8% of the
+baseline at every share (the remaining cost is its per-DPU histogram and one probe batch in eight) and still gives
+the full speedup under hot keys. Spreading a hot region of distinct keys needs re-partitioning (the paper's
+skew-resistant layout), which our host-only addition cannot do.

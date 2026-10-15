@@ -53,6 +53,7 @@ int search_round;
 bool lookup_dedup;
 bool lookup_adaptive;
 double adaptive_threshold;
+double adaptive_repeat_threshold;
 int hot_cache_size;
 COORD input_coord_max[NR_DIMENSION];
 
@@ -176,6 +177,11 @@ void host_parse_arguments(int argc, char *argv[]) {
         .help("--lookup-adaptive uses dedup/cache when busiest DPU's lookups > this x mean")
         .default_value(1.2)
         .scan<'g', double>();
+    parser.add_argument("--adaptive-repeat-threshold")
+        .help("--lookup-adaptive skips dedup/cache while the last batch that used them saved less than this share "
+              "of its lookups (re-checked every 8 batches)")
+        .default_value(0.05)
+        .scan<'g', double>();
     parser.add_argument("--hot-cache-size")
         .help("Keys in the host-side hot-key cache, 0 = off (contribution; implies --lookup-dedup)")
         .default_value(0)
@@ -219,6 +225,7 @@ void host_parse_arguments(int argc, char *argv[]) {
     hot_cache_size     = parser.get<int>("--hot-cache-size");
     lookup_adaptive    = parser.get<bool>("--lookup-adaptive");
     adaptive_threshold = parser.get<double>("--adaptive-threshold");
+    adaptive_repeat_threshold = parser.get<double>("--adaptive-repeat-threshold");
     if(hot_cache_size > 0 || lookup_adaptive) lookup_dedup = true;
     if(query_dist != "sample" && query_dist != "uniform" && query_dist != "zipf" && query_dist != "mix") {
         fprintf(stderr, "unknown --query-dist %s (use sample, uniform, zipf or mix)\n", query_dist.c_str());
@@ -572,6 +579,7 @@ int main(int argc, char *argv[]) {
             zd_tree.lookup_dedup = lookup_dedup;
             zd_tree.lookup_adaptive = lookup_adaptive;
             zd_tree.adaptive_threshold = adaptive_threshold;
+            zd_tree.adaptive_repeat_threshold = adaptive_repeat_threshold;
             if(lookup_dedup) zd_tree.dedup_table.reserve(search_batch_size);  // setup, outside the measured batches
             zd_tree.hot_cache.capacity = hot_cache_size;
             if(query_dist == "sample") {
@@ -598,8 +606,9 @@ int main(int argc, char *argv[]) {
                     pim_stats::end();
                 }
                 if(zd_tree.lookup_adaptive)
-                    printf("Adaptive lookups: dedup skipped in %llu of %llu batches\n",
-                           (unsigned long long)zd_tree.adaptive_skipped, (unsigned long long)zd_tree.adaptive_batches);
+                    printf("Adaptive lookups: dedup skipped in %llu of %llu batches (%llu for lack of repeats)\n",
+                           (unsigned long long)zd_tree.adaptive_skipped, (unsigned long long)zd_tree.adaptive_batches,
+                           (unsigned long long)zd_tree.adaptive_norepeat_skipped);
                 if(zd_tree.hot_cache.capacity > 0)
                     printf("Hot-key cache: %zu keys, %llu hits of %llu lookups\n", zd_tree.hot_cache.keys.size(),
                            (unsigned long long)zd_tree.hot_cache.hits, (unsigned long long)zd_tree.hot_cache.lookups);

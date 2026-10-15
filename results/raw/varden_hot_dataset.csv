@@ -8,3 +8,6 @@ varden_quantile_q1.0_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
 varden_quantile_q1.2_base,64,file,1,1024,22,1,800000,0.9969,0.9231
 varden_quantile_q1.2_cache,64,file,1,1024,22,1,800000,0.9969,0.9231
 varden_quantile_q1.2_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_quniform_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.0_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.2_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231

@@ -98,7 +98,7 @@ data, while the paper's L0 adapts through promotion and demotion.
 | `--search-round R` | R lookup batches of `-S` queries |
 | `--lookup-dedup` | send each distinct key of a batch once |
 | `--hot-cache-size N` | host-side cache of N hot, present keys (implies `--lookup-dedup`) |
-| `--lookup-adaptive [--adaptive-threshold 1.2]` | use dedup/cache only when the busiest DPU would get > threshold × mean lookups |
+| `--lookup-adaptive [--adaptive-threshold 1.2] [--adaptive-repeat-threshold 0.05]` | use dedup/cache only when the busiest DPU would get > threshold × mean lookups and the last batch on that path saved ≥ 5% of lookups (re-checked every 8 batches) |
 
 `cpu_baseline/cpu_bench` takes the same `--query-dist`, `--query-zipf-s` and `--search-round`.
 
