@@ -1,0 +1,21 @@
+CPU baseline: tree=pkd threads=20 dist=uniform
+pkd-tree warmup_insert batch 0: 80000 ops in 0.004676 s (17.11 Mop/s)
+pkd-tree warmup_insert batch 1: 80000 ops in 0.001989 s (40.22 Mop/s)
+pkd-tree warmup_insert batch 2: 80000 ops in 0.001316 s (60.81 Mop/s)
+pkd-tree warmup_insert batch 3: 80000 ops in 0.001187 s (67.40 Mop/s)
+pkd-tree warmup_insert batch 4: 80000 ops in 0.001411 s (56.72 Mop/s)
+pkd-tree warmup_insert batch 5: 80000 ops in 0.001679 s (47.64 Mop/s)
+pkd-tree warmup_insert batch 6: 80000 ops in 0.002049 s (39.04 Mop/s)
+pkd-tree warmup_insert batch 7: 80000 ops in 0.002549 s (31.39 Mop/s)
+pkd-tree warmup_insert batch 8: 80000 ops in 0.002583 s (30.97 Mop/s)
+pkd-tree warmup_insert batch 9: 80000 ops in 0.002660 s (30.07 Mop/s)
+pkd-tree lookup batch 0: 50000 ops in 0.003126 s (15.99 Mop/s) found 45021
+pkd-tree lookup batch 1: 50000 ops in 0.002621 s (19.08 Mop/s) found 45168
+pkd-tree lookup batch 2: 50000 ops in 0.002554 s (19.58 Mop/s) found 45022
+pkd-tree lookup batch 3: 50000 ops in 0.002790 s (17.92 Mop/s) found 45055
+pkd-tree lookup batch 4: 50000 ops in 0.002841 s (17.60 Mop/s) found 45068
+pkd-tree lookup batch 5: 50000 ops in 0.002862 s (17.47 Mop/s) found 44938
+pkd-tree lookup batch 6: 50000 ops in 0.002685 s (18.62 Mop/s) found 44976
+pkd-tree lookup batch 7: 50000 ops in 0.002875 s (17.39 Mop/s) found 45053
+pkd-tree lookup batch 8: 50000 ops in 0.002734 s (18.29 Mop/s) found 45023
+pkd-tree lookup batch 9: 50000 ops in 0.002706 s (18.48 Mop/s) found 44944

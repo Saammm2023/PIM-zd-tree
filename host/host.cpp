@@ -45,6 +45,9 @@ int data_seed;
 std::string placement;
 bool verify_each_batch;
 std::string query_dist;
+std::string input_file;
+std::string query_file;
+double query_mix;
 double query_zipf_s;
 int search_round;
 bool lookup_dedup;
@@ -142,6 +145,17 @@ void host_parse_arguments(int argc, char *argv[]) {
         .help("Lookup queries: sample (first S/I points of each warm-up batch, plus one absent point), "
               "uniform (any warm-up point) or zipf (hot keys, see --query-zipf-s)")
         .default_value(std::string("sample"));
+    parser.add_argument("--input")
+        .help("Read points from this file (scripts/prepare_points.py) instead of generating them; "
+              "warm-up = its first -i x -I points, timed inserts = the points after them")
+        .default_value(std::string(""));
+    parser.add_argument("--query-file")
+        .help("Point file for --query-dist mix (e.g. Varden points, paper Fig. 9)")
+        .default_value(std::string(""));
+    parser.add_argument("--query-mix")
+        .help("--query-dist mix: fraction of lookups taken from --query-file, the rest uniform over stored points")
+        .default_value(0.0)
+        .scan<'g', double>();
     parser.add_argument("--query-zipf-s")
         .help("Zipf exponent of key popularity for --query-dist zipf")
         .default_value(1.0)
@@ -196,6 +210,9 @@ void host_parse_arguments(int argc, char *argv[]) {
     placement          = parser.get<std::string>("--placement");
     verify_each_batch  = parser.get<bool>("--verify-each-batch");
     query_dist         = parser.get<std::string>("--query-dist");
+    input_file         = parser.get<std::string>("--input");
+    query_file         = parser.get<std::string>("--query-file");
+    query_mix          = parser.get<double>("--query-mix");
     query_zipf_s       = parser.get<double>("--query-zipf-s");
     search_round       = parser.get<int>("--search-round");
     lookup_dedup       = parser.get<bool>("--lookup-dedup");
@@ -203,8 +220,8 @@ void host_parse_arguments(int argc, char *argv[]) {
     lookup_adaptive    = parser.get<bool>("--lookup-adaptive");
     adaptive_threshold = parser.get<double>("--adaptive-threshold");
     if(hot_cache_size > 0 || lookup_adaptive) lookup_dedup = true;
-    if(query_dist != "sample" && query_dist != "uniform" && query_dist != "zipf") {
-        fprintf(stderr, "unknown --query-dist %s (use sample, uniform or zipf)\n", query_dist.c_str());
+    if(query_dist != "sample" && query_dist != "uniform" && query_dist != "zipf" && query_dist != "mix") {
+        fprintf(stderr, "unknown --query-dist %s (use sample, uniform, zipf or mix)\n", query_dist.c_str());
         exit(1);
     }
     if(placement != "quantile" && placement != "equal") {
@@ -227,6 +244,11 @@ int main(int argc, char *argv[]) {
     if(!datagen::init(data_dist, zipf_s, nr_clusters, cluster_width_log2, (uint64_t)data_seed)) {
         fprintf(stderr, "unknown --dist %s (use uniform or zipf)\n", data_dist.c_str());
         return 1;
+    }
+    if(!input_file.empty()) {
+        uint64_t warm = (uint64_t)insert_batch_size * insert_round;
+        uint64_t timed = (test_type == 1) ? (uint64_t)test_batch_size * test_round : 0;
+        if(!datagen::init_file(input_file, warm, timed)) return 1;
     }
     
     pim_zd_tree zd_tree;
@@ -562,12 +584,14 @@ int main(int argc, char *argv[]) {
                 pim_stats::end();
             }
             else {
-                // Queries over the warm-up points: every one should be found (Unmatch Num: 0)
+                // Queries over the warm-up points: every one should be found (Unmatch Num: 0), except the
+                // --query-file points of a mix, which are generally not stored
                 datagen::init_queries(query_dist, query_zipf_s, (uint64_t)total_insert_size);
+                if(query_dist == "mix" && !datagen::init_query_mix(query_file, query_mix)) return 1;
                 for(int r = 0; r < search_round; r++) {
                     zd_tree.length = search_batch_size;
                     parfor_wrap(0, zd_tree.length, [&](size_t i) {
-                        zd_tree.vector_input[i] = datagen::point(1, datagen::query_point_index(r, i));
+                        zd_tree.vector_input[i] = datagen::to_vector(datagen::query_point(r, i));
                     });
                     pim_stats::begin("lookup", r, zd_tree.length);
                     zd_tree.search_maximum_match(true, false, debug_print);

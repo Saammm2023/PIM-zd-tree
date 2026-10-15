@@ -44,6 +44,8 @@ struct Options {
     std::string query_dist = "sample";
     double query_zipf_s = 1.0;
     long search_round = 1;
+    std::string input, query_file;
+    double query_mix = 0;
 };
 
 Options parse(int argc, char** argv) {
@@ -73,6 +75,9 @@ Options parse(int argc, char** argv) {
         else if (a == "--query-dist") o.query_dist = next();
         else if (a == "--query-zipf-s") o.query_zipf_s = std::atof(next());
         else if (a == "--search-round") o.search_round = std::atol(next());
+        else if (a == "--input") o.input = next();
+        else if (a == "--query-file") o.query_file = next();
+        else if (a == "--query-mix") o.query_mix = std::atof(next());
         else { std::fprintf(stderr, "unknown option %s\n", a.c_str()); std::exit(1); }
     }
     return o;
@@ -169,10 +174,11 @@ void run(const Options& o, const char* tree_name) {
     } else if (o.search_type == 1) {
         // Same query stream as the PIM host's --query-dist uniform|zipf: every query is a warm-up point
         datagen::init_queries(o.query_dist, o.query_zipf_s, (uint64_t)(o.insert_batch_size * o.insert_round));
+        if (o.query_dist == "mix" && !datagen::init_query_mix(o.query_file, o.query_mix)) std::exit(1);
         long n = o.search_batch_size;
         for (long r = 0; r < o.search_round; r++) {
             auto queries = parlay::tabulate(n, [&](size_t q) {
-                return make_point(datagen::point_coords(1, datagen::query_point_index(r, q)));
+                return make_point(datagen::query_point(r, q));
             });
             std::atomic<long> found{0};
             auto t0 = clock_type::now();
@@ -194,6 +200,10 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "unknown --dist %s (use uniform or zipf)\n", o.dist.c_str());
         return 1;
     }
+    if (!o.input.empty() &&
+        !datagen::init_file(o.input, (uint64_t)(o.insert_batch_size * o.insert_round),
+                            o.test_type == 1 ? (uint64_t)(o.test_batch_size * o.test_round) : 0))
+        return 1;
     std::printf("CPU baseline: tree=%s threads=%zu dist=%s\n", o.tree.c_str(), (size_t)parlay::num_workers(),
                 datagen::dist_name());
     if (o.tree == "pkd") {

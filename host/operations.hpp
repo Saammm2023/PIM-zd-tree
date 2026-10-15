@@ -977,10 +977,15 @@ public:
 
         if(print_res) {
             cout<<"------------ Search Results --------------"<<endl;
-            int match_num = 0;
+            // Print only the first few mismatches: queries for absent points (e.g. --query-dist mix) would
+            // otherwise print thousands of lines, and that console time counts as host time in the stats
+            int match_num = 0, printed = 0;
             for(int i = 0; i < this->length; i++) {
                 if(key_seq[i] == return_seq[i]) match_num++;
-                else cout<<hex<<key_seq[i]<<" "<<return_seq[i]<<endl;
+                else if(printed < 10) {
+                    cout<<hex<<key_seq[i]<<" "<<return_seq[i]<<dec<<endl;
+                    printed++;
+                }
             }
             cout<<"Match Num: "<<dec<<match_num<<"; Unmatch Num: "<<(this->length - match_num)<<endl;
         }

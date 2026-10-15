@@ -1,0 +1,5 @@
+tree,op,mops
+pkd-tree,insert,20.729684908789388
+pkd-tree,lookup,14.641581259150804
+zd-tree,insert,7.642533245019616
+zd-tree,lookup,7.571320411871594

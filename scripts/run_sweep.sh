@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Experiment sweep for the report. Writes CSVs under results/raw/ and one log per run under results/logs/.
-#   scripts/run_sweep.sh [scaling|batch|skewcmp|contrib|cpu|all]
+#   scripts/run_sweep.sh [scaling|batch|skewcmp|contrib|varden|varden_mix|cpu|all]
 # Needs: source ~/upmem-sdk/env-sim.sh, and cpu_baseline/cpu_bench built (make -C cpu_baseline).
 set -u
 cd "$(dirname "$0")/.."
@@ -114,6 +114,76 @@ contrib() {
     done
 }
 
+varden() {
+    # Varden benchmark (SpaceTreeLib's generator; see SETUP_SIMULATOR.md "Varden"). Needs
+    # $VARDEN/varden_data.pts and $VARDEN/varden_query.pts.
+    local V=${VARDEN:-../varden}
+    [ -f "$V/varden_data.pts" ] && [ -f "$V/varden_query.pts" ] || { echo "Varden files not found in $V"; return 1; }
+    build 8 16 32 64
+    rm -f "$RAW"/varden_*
+    local LOOK="-s 1 -S 50000"
+    # 1. Varden as data: 800k points, PIM-zd-tree (equal ranges overflow), and 200k points for both placements
+    for d in 8 16 32 64; do
+        run_pim "varden_scaling_${d}" $d "$RAW/varden_scaling" "varden_quantile" \
+            $WARMUP -t 1 -b 50000 -r 3 $LOOK --input "$V/varden_data.pts" --placement quantile
+        for pl in quantile equal; do
+            run_pim "varden_small_${d}_${pl}" $d "$RAW/varden_small" "varden_${pl}" \
+                -i 20000 -I 10 -t 1 -b 20000 -r 3 -s 1 -S 20000 --input "$V/varden_data.pts" --placement $pl
+        done
+    done
+    # 2. Hot keys over Varden data, 64 DPUs: baseline vs our addition
+    for q in uniform 1.0 1.2; do
+        local qarg="--query-dist zipf --query-zipf-s $q"
+        [ "$q" = uniform ] && qarg="--query-dist uniform"
+        for v in base cache adaptive; do
+            local varg=""
+            [ $v = cache ] && varg="--hot-cache-size 256"
+            [ $v = adaptive ] && varg="--lookup-adaptive --hot-cache-size 256"
+            run_pim "varden_hot_64_q${q}_${v}" 64 "$RAW/varden_hot" "varden_quantile_q${q}_${v}" \
+                $WARMUP $LOOK --search-round 10 $qarg $varg --input "$V/varden_data.pts"
+        done
+    done
+    varden_mix
+    varden_cpu
+}
+
+varden_mix() {
+    # Paper Fig. 9 for point lookups: uniform data, a fraction of lookups from Varden points, 64 DPUs
+    local V=${VARDEN:-../varden}
+    local LOOK="-s 1 -S 50000"
+    build 64
+    rm -f "$RAW"/varden_mix_batches.csv "$RAW"/varden_mix_dpus.csv "$RAW"/varden_mix_dataset.csv "$RAW"/varden_mix_failures.csv
+    for f in 0 0.0001 0.001 0.01 0.02 0.05 0.1; do
+        for v in base adaptive; do
+            local varg=""
+            [ $v = adaptive ] && varg="--lookup-adaptive --hot-cache-size 256"
+            run_pim "varden_mix_64_f${f}_${v}" 64 "$RAW/varden_mix" "uniform_quantile_f${f}_${v}" \
+                $WARMUP $LOOK --search-round 10 --query-dist mix --query-file "$V/varden_query.pts" --query-mix $f \
+                $varg ${DIST[uniform]}
+        done
+    done
+}
+
+varden_cpu() {
+    # CPU baselines on the Varden data and the Fig. 9 query streams (20 threads, 3 repetitions)
+    local V=${VARDEN:-../varden}
+    local LOOK="-s 1 -S 50000"
+    rm -f "$RAW"/varden_scaling_cpu.csv "$RAW"/varden_mix_cpu.csv
+    for rep in 1 2 3; do
+        for tree in pkd zd; do
+            PARLAY_NUM_THREADS=20 cpu_baseline/cpu_bench --tree $tree $WARMUP -t 1 -b 50000 -r 3 $LOOK \
+                --input "$V/varden_data.pts" --stats-csv "$RAW/varden_scaling" --stats-tag varden --rep $rep \
+                > "$LOGS/cpu_varden_${tree}_$rep.log" 2>&1 || echo "FAIL  cpu varden $tree rep $rep"
+            for f in 0 0.0001 0.001 0.01 0.02 0.05 0.1; do
+                PARLAY_NUM_THREADS=20 cpu_baseline/cpu_bench --tree $tree $WARMUP $LOOK --search-round 10 \
+                    --query-dist mix --query-file "$V/varden_query.pts" --query-mix $f ${DIST[uniform]} \
+                    --stats-csv "$RAW/varden_mix" --stats-tag "uniform_f$f" --rep $rep \
+                    > "$LOGS/cpu_varden_mix_${tree}_f${f}_$rep.log" 2>&1 || echo "FAIL  cpu varden mix $tree f$f rep $rep"
+            done
+        done
+    done
+}
+
 cpu() {
     # Wall-clock CPU timings vary run to run; each configuration runs REPS times and the analysis takes the median
     local REPS=3
@@ -147,7 +217,9 @@ case "${1:-all}" in
     batch) batch ;;
     skewcmp) skewcmp ;;
     contrib) contrib ;;
+    varden) varden ;;
+    varden_mix) varden_mix ;;
     cpu) cpu ;;
     all) cpu; scaling; batch; skewcmp; contrib ;;
-    *) echo "usage: $0 [scaling|batch|skewcmp|contrib|cpu|all]"; exit 1 ;;
+    *) echo "usage: $0 [scaling|batch|skewcmp|contrib|varden|varden_mix|cpu|all]"; exit 1 ;;
 esac

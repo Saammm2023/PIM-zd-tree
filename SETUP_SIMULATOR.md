@@ -102,6 +102,17 @@ data, while the paper's L0 adapts through promotion and demotion.
 
 `cpu_baseline/cpu_bench` takes the same `--query-dist`, `--query-zipf-s` and `--search-round`.
 
+## Point files and the Varden benchmark (see `results/VARDEN.md`)
+
+| Option | Meaning |
+|---|---|
+| `--input file.pts` | read points from a file instead of generating them: warm-up = its first `-i × -I` points, timed inserts = the points after them (host and `cpu_bench`) |
+| `--query-dist mix --query-file q.pts --query-mix f` | each lookup comes from `q.pts` with probability f, otherwise from a uniformly chosen stored point (paper Fig. 9) |
+
+`scripts/prepare_points.py` converts a SpaceTreeLib point file (e.g. Varden from `tests/data_generate.cpp`) into this
+binary format. `scripts/run_sweep.sh varden` runs the Varden experiments; `scripts/analyze_varden.py` makes the
+figures and tables.
+
 ## CPU baselines (`cpu_baseline/`)
 
 `cpu_baseline/cpu_bench` runs the paper's two shared-memory competitors from
@@ -185,6 +196,8 @@ timed host work.
 | `pim_base/host/pim_stats.hpp`, `pim_base/dpu/driver.h`, `task_framework_host.hpp`, `host/host.cpp` | per-batch DPU cycles, bytes and host time to CSV (`--stats-csv`, `--stats-tag`) |
 | `host/datagen_core.hpp`, `cpu_baseline/` | generator core shared with the CPU baselines; CPU driver for SpaceTreeLib |
 | `host/datagen.hpp`, `host/host.cpp` | reproducible uniform / Zipf-cluster generator, dataset Gini, `--placement quantile|equal`, `--verify-each-batch` |
+| `host/datagen_core.hpp`, `host/host.cpp`, `cpu_baseline/`, `scripts/prepare_points.py` | point-file input and Varden query mixes |
+| `host/operations.hpp` (`search_maximum_match`) | prints only the first 10 mismatched lookups (printing thousands counted as host time) |
 | `host/hot_cache.hpp`, `host/operations.hpp` (`search_maximum_match`), `host/datagen_core.hpp` | our addition: hot-key query workloads, lookup dedup, hot-key cache, adaptive switching |
 | `host/operations.hpp` (`insert`) | **bug fix**: insert tasks are grouped by target, not by consecutive run in key order (see below) |
 | `host/operations.hpp` (`insert`) | insert tasks capped at `MAX_INSERT_TASK_LEN` points; the extra points go into another insert round (see Known limits) |

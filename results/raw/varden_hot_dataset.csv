@@ -1,0 +1,10 @@
+tag,nr_dpus,dist,zipf_s,clusters,width_log2,seed,points,gini_2048,gini_dpu_bins
+varden_quantile_quniform_base,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_quniform_cache,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_quniform_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.0_base,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.0_cache,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.0_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.2_base,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.2_cache,64,file,1,1024,22,1,800000,0.9969,0.9231
+varden_quantile_q1.2_adaptive,64,file,1,1024,22,1,800000,0.9969,0.9231

@@ -1,0 +1,9 @@
+tag,nr_dpus,dist,zipf_s,clusters,width_log2,seed,points,gini_2048,gini_dpu_bins
+varden_quantile,8,file,1,1024,22,1,200000,0.9969,0.5687
+varden_equal,8,file,1,1024,22,1,200000,0.9969,0.5687
+varden_quantile,16,file,1,1024,22,1,200000,0.9969,0.6967
+varden_equal,16,file,1,1024,22,1,200000,0.9969,0.6967
+varden_quantile,32,file,1,1024,22,1,200000,0.9969,0.8462
+varden_equal,32,file,1,1024,22,1,200000,0.9969,0.8462
+varden_quantile,64,file,1,1024,22,1,200000,0.9969,0.9231
+varden_equal,64,file,1,1024,22,1,200000,0.9969,0.9231

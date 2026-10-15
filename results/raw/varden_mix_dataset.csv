@@ -1,0 +1,15 @@
+tag,nr_dpus,dist,zipf_s,clusters,width_log2,seed,points,gini_2048,gini_dpu_bins
+uniform_quantile_f0_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.0001_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.0001_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.001_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.001_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.01_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.01_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.02_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.02_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.05_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.05_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.1_base,64,uniform,1,1024,22,1,800000,0.0286,0.0056
+uniform_quantile_f0.1_adaptive,64,uniform,1,1024,22,1,800000,0.0286,0.0056

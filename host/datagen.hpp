@@ -14,14 +14,15 @@ static_assert(NR_DIMENSION == datagen::kDim, "datagen_core generates 3-D points"
 
 namespace datagen {
 
-inline vectorT point(uint64_t stream, uint64_t index) {
-    coords c = point_coords(stream, index);
+inline vectorT to_vector(const coords& c) {
     vectorT v;
     v.x = (COORD)c[0];
     v.y = (COORD)c[1];
     v.z = (COORD)c[2];
     return v;
 }
+
+inline vectorT point(uint64_t stream, uint64_t index) { return to_vector(point_coords(stream, index)); }
 
 // Gini coefficient of point counts over nr_bins equal ranges of the z-order key space (paper Sec. 7.2
 // uses 2048 bins). 0 = perfectly even, close to 1 = all points in a few bins.

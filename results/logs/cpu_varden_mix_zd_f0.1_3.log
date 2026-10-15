@@ -1,0 +1,21 @@
+CPU baseline: tree=zd threads=20 dist=uniform
+zd-tree warmup_insert batch 0: 80000 ops in 0.002907 s (27.52 Mop/s)
+zd-tree warmup_insert batch 1: 80000 ops in 0.002815 s (28.42 Mop/s)
+zd-tree warmup_insert batch 2: 80000 ops in 0.002019 s (39.63 Mop/s)
+zd-tree warmup_insert batch 3: 80000 ops in 0.003312 s (24.16 Mop/s)
+zd-tree warmup_insert batch 4: 80000 ops in 0.004155 s (19.25 Mop/s)
+zd-tree warmup_insert batch 5: 80000 ops in 0.004908 s (16.30 Mop/s)
+zd-tree warmup_insert batch 6: 80000 ops in 0.005638 s (14.19 Mop/s)
+zd-tree warmup_insert batch 7: 80000 ops in 0.006306 s (12.69 Mop/s)
+zd-tree warmup_insert batch 8: 80000 ops in 0.006509 s (12.29 Mop/s)
+zd-tree warmup_insert batch 9: 80000 ops in 0.006366 s (12.57 Mop/s)
+zd-tree lookup batch 0: 50000 ops in 0.004770 s (10.48 Mop/s) found 45021
+zd-tree lookup batch 1: 50000 ops in 0.003525 s (14.18 Mop/s) found 45168
+zd-tree lookup batch 2: 50000 ops in 0.003447 s (14.50 Mop/s) found 45022
+zd-tree lookup batch 3: 50000 ops in 0.003358 s (14.89 Mop/s) found 45055
+zd-tree lookup batch 4: 50000 ops in 0.003371 s (14.83 Mop/s) found 45068
+zd-tree lookup batch 5: 50000 ops in 0.003318 s (15.07 Mop/s) found 44938
+zd-tree lookup batch 6: 50000 ops in 0.003317 s (15.07 Mop/s) found 44976
+zd-tree lookup batch 7: 50000 ops in 0.003313 s (15.09 Mop/s) found 45053
+zd-tree lookup batch 8: 50000 ops in 0.003315 s (15.08 Mop/s) found 45023
+zd-tree lookup batch 9: 50000 ops in 0.003291 s (15.19 Mop/s) found 44944
