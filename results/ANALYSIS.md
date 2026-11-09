@@ -47,8 +47,9 @@ what limits insert scaling here.
 
 **5. Larger batches are faster (Fig. `fig_batch_size`, paper Fig. 7).** At 64 DPUs, insert throughput rises from
 4.3 to 10.1 Mop/s and lookups from 12.7 to 29.9 Mop/s between 5k and 200k operations per batch, as fixed per-launch
-costs are amortised and per-DPU work evens out. The paper sees the same rise and a drop for very large batches
-caused by L3 misses on the host, which our batch sizes (≤200k) do not reach.
+costs are amortised and per-DPU work evens out. The paper sees the same rise up to 2M operations per batch (6.5 to
+42 Mop/s for inserts), with memory traffic per insert growing above 200k because the batch no longer fits in the
+host's L3 cache; our batch sizes (≤200k) do not reach that point.
 
 **6. Communication volume.** PIM-zd-tree moves 58 B per insert and 16 B per lookup that are actually needed.
 Because a parallel UPMEM transfer sends every DPU the largest DPU's size, bytes moved grow with DPU count

@@ -38,11 +38,14 @@
 \IEEEauthorblockN{Chetan Srirama}
 \IEEEauthorblockA{Roll no. 240101031}
 \and
-\IEEEauthorblockN{Samrudhhi Sonawane}
+\IEEEauthorblockN{Samruddhi Sonawane}
 \IEEEauthorblockA{Roll no. 240101083}
 \and
-\IEEEauthorblockN{Venkata Sai Shankar Karthik Macharla}
+\IEEEauthorblockN{Karthik Macharla}
 \IEEEauthorblockA{Roll no. 240101111}
+\and
+\IEEEauthorblockN{Twinkle Patel}
+\IEEEauthorblockA{Roll no. 220101105}
 }
 
 \maketitle
@@ -312,8 +315,9 @@ about 11\% at 8 DPUs to 44\% at 64. That host work is what limits insert scaling
 
 \textbf{Batch size} (Fig.~\ref{fig:batch}). As in the paper's Fig.~7, larger batches are faster: from 5k to 200k
 operations, inserts rise from 4.3 to 10.1\,Mop/s and lookups from 12.7 to 29.9\,Mop/s, as fixed per-round costs
-are spread out and per-DPU work evens out. The paper's drop for very large batches comes from L3 misses on the host,
-which our batch sizes do not reach.
+are spread out and per-DPU work evens out. The paper's inserts keep rising up to 2M operations per batch
+(6.5 to 42\,Mop/s), but above 200k its memory traffic per insert grows because the batch no longer fits in the
+host's L3 cache; our batches stop at 200k.
 
 \textbf{Communication.} PIM-zd-tree moves 58\,B per insert and 16\,B per lookup that are actually needed. Padding to
 the largest DPU's buffer adds 2--9\%, growing with the DPU count.
